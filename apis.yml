@@ -1,0 +1,29 @@
+aid: helpscout
+url: https://raw.githubusercontent.com/api-evangelist/helpscout/refs/heads/main/apis.yml
+name: Help Scout
+x-type: company
+description: >-
+  Help Scout is an email-first help desk platform for customer-centric teams. The Help Scout API exposes conversations, mailboxes, customers, users, and knowledge base content.
+image: https://kinlane-productions.s3.amazonaws.com/apis-json/apis-json-logo.jpg
+tags:
+  - Customer Support
+  - Help Desk
+  - Email
+  - Knowledge Base
+  - SaaS
+created: '2026-05-08'
+modified: '2026-05-08'
+specificationVersion: '0.19'
+apis: []
+common:
+  - type: Website
+    url: https://www.helpscout.com/
+  - type: Plans
+    url: plans/helpscout-plans-pricing.yml
+  - type: RateLimits
+    url: rate-limits/helpscout-rate-limits.yml
+  - type: FinOps
+    url: finops/helpscout-finops.yml
+maintainers:
+  - FN: Kin Lane
+    email: kin@apievangelist.com
