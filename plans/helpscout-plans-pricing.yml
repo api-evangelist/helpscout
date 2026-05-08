@@ -5,38 +5,132 @@ provider: Help Scout
 providerId: helpscout
 created: '2026-05-08'
 modified: '2026-05-08'
-reconciled: false
+reconciled: true
 tags:
-- Customer Support
-- Help Desk
-- Email
-- Knowledge Base
-- SaaS
-- Plans
-description: Placeholder plans/pricing artifact for Help Scout. Replace with real published pricing once
-  the pipeline researches the provider's plans page.
-notes: Initial scaffold — plans/pricing have not yet been reconciled against the provider's documentation.
+  - Customer Support
+  - Help Desk
+  - Email
+  - Knowledge Base
+  - Plans
+description: >-
+  Help Scout publishes a Free plan plus three paid per-user-per-month tiers
+  (Standard / Plus / Pro), an AI Answers usage add-on, and per-inbox /
+  per-Docs-site add-ons. Annual billing earns a 16% discount across paid
+  plans.
 sources:
-- https://www.helpscout.com/
+  - https://www.helpscout.com/pricing/
 plans:
-- id: helpscout-default
-  name: To Be Reconciled
-  type: enterprise
-  description: Initial scaffold; replace with provider plan tiers (Free / Pro / Enterprise / pay-as-you-go,
-    etc.) once pricing is reconciled.
-  entries:
-  - label: API Access
-    name: api_access
-    type: flat
-    metric: varies
-    limit: -1
-    timeFrame: usage
-    geo: global
-    unit: 1
-    price: see https://www.helpscout.com/
-    userMultiplied: false
-  elements:
-  - name: Pending Reconciliation
+  - id: helpscout-free
+    name: Free
+    type: free
+    description: >-
+      Up to 5 users, 1 Inbox, 1 Docs site at no cost. Suited to early-stage
+      teams; no AI features or advanced workflows.
+    entries:
+      - label: Free
+        name: helpscout_free
+        type: flat
+        metric: account
+        timeFrame: monthly
+        unit: 1
+        price: '0'
+        currency: USD
+        userMultiplied: false
+    elements:
+      - name: Up to 5 users
+      - name: 1 Inbox, 1 Docs site
+  - id: helpscout-standard
+    name: Standard
+    type: per-seat
+    description: >-
+      Multiple inboxes, live chat, Instagram & Messenger support, and
+      basic AI features.
+    entries:
+      - label: Per User / Month
+        name: helpscout_standard_seat
+        type: flat
+        metric: users
+        timeFrame: monthly
+        unit: 1
+        price: '25'
+        currency: USD
+        userMultiplied: true
+  - id: helpscout-plus
+    name: Plus
+    type: per-seat
+    description: >-
+      Adds WhatsApp, advanced workflows, and integrations with Salesforce,
+      Jira, and HubSpot. Marked as the popular tier.
+    entries:
+      - label: Per User / Month
+        name: helpscout_plus_seat
+        type: flat
+        metric: users
+        timeFrame: monthly
+        unit: 1
+        price: '45'
+        currency: USD
+        userMultiplied: true
+  - id: helpscout-pro
+    name: Pro
+    type: per-seat
+    description: >-
+      Unlimited workflows, SSO/SAML, HIPAA compliance, dedicated account
+      management.
+    entries:
+      - label: Per User / Month
+        name: helpscout_pro_seat
+        type: flat
+        metric: users
+        timeFrame: monthly
+        unit: 1
+        price: '75'
+        currency: USD
+        userMultiplied: true
+  - id: helpscout-ai-answers
+    name: AI Answers Add-On
+    type: usage
+    description: >-
+      Autonomous AI chatbot priced per resolution. 3-month free trial with
+      new accounts.
+    entries:
+      - label: Per Resolution
+        name: helpscout_ai_answers
+        type: flat
+        metric: resolutions
+        timeFrame: usage
+        unit: 1
+        price: '0.75'
+        currency: USD
+        userMultiplied: false
+  - id: helpscout-additional-inbox
+    name: Additional Inbox Add-On
+    type: addon
+    description: Each extra mailbox / inbox above the plan default.
+    entries:
+      - label: Per Inbox / Month
+        name: helpscout_extra_inbox
+        type: flat
+        metric: inboxes
+        timeFrame: monthly
+        unit: 1
+        price: '10'
+        currency: USD
+        userMultiplied: false
+  - id: helpscout-additional-docs
+    name: Additional Docs Site Add-On
+    type: addon
+    description: Each extra Docs (knowledge base) site above the plan default.
+    entries:
+      - label: Per Docs Site / Month
+        name: helpscout_extra_docs
+        type: flat
+        metric: docs_sites
+        timeFrame: monthly
+        unit: 1
+        price: '20'
+        currency: USD
+        userMultiplied: false
 maintainers:
-- FN: Kin Lane
-  email: kin@apievangelist.com
+  - FN: Kin Lane
+    email: kin@apievangelist.com

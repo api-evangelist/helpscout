@@ -5,22 +5,21 @@ provider: Help Scout
 providerId: helpscout
 created: '2026-05-08'
 modified: '2026-05-08'
-reconciled: false
+reconciled: true
 tags:
-- Customer Support
-- Help Desk
-- Email
-- Knowledge Base
-- SaaS
-- FinOps
-- Cost Management
-- FOCUS
-description: FOCUS-aligned FinOps placeholder for Help Scout. Pipeline will replace with the provider's
-  real billing-model details once researched.
-notes: Initial scaffold — billing model has not yet been reconciled.
+  - Customer Support
+  - Help Desk
+  - FinOps
+  - FOCUS
+description: >-
+  Help Scout's billing model is per-user-per-month subscription on Standard,
+  Plus, and Pro tiers, plus AI Answers per-resolution usage and additional
+  inbox / Docs site add-ons. Annual billing earns 16% off. This artifact
+  maps Help Scout charges to FOCUS columns for FinOps allocation across
+  customer-support cost centers.
 sources:
-- https://www.helpscout.com/
-- https://focus.finops.org/focus-specification/v1-3/
+  - https://www.helpscout.com/pricing/
+  - https://focus.finops.org/focus-specification/v1-3/
 alignedWith:
   framework: FinOps Foundation Framework
   frameworkUrl: https://www.finops.org/framework/
@@ -30,13 +29,14 @@ alignedWith:
 publisherName: Help Scout
 serviceCategory: Customer Support
 billingModel:
-  pricingCategory: To Be Reconciled
+  pricingCategory: Subscription Per Seat
   billingFrequency: Monthly
   billingCurrency: USD
   chargeCategories:
-  - Usage
-  - Purchase
-  - Adjustment
+    - Purchase
+    - Usage
+    - Adjustment
+    - Tax
 focusColumns:
   ServiceName: Help Scout
   ServiceCategory: Customer Support
@@ -44,24 +44,53 @@ focusColumns:
   PublisherName: Help Scout
   InvoiceIssuerName: Help Scout
   BillingCurrency: USD
-  ChargeCategory: Usage
+  ChargeCategory: Purchase
 meters:
-- name: api_usage
-  description: Catch-all meter pending reconciliation against the provider's published metering.
-  unit: varies
-  aggregation: sum
-  dimensions:
-  - account
-  - resource
+  - name: helpscout_seats
+    description: Active Standard / Plus / Pro user seats.
+    unit: user-month
+    aggregation: sum
+    dimensions:
+      - tier
+      - cost_center
+  - name: helpscout_ai_resolutions
+    description: AI Answers chatbot resolutions billed at $0.75 each.
+    unit: resolutions
+    aggregation: count
+    dimensions:
+      - inbox
+      - cost_center
+  - name: helpscout_extra_inboxes
+    description: Additional mailbox / inbox seats above plan default ($10/mo each).
+    unit: inbox-month
+    aggregation: sum
+    dimensions:
+      - team
+      - cost_center
+  - name: helpscout_extra_docs_sites
+    description: Additional Docs (knowledge base) sites above plan default ($20/mo each).
+    unit: docs_site-month
+    aggregation: sum
+    dimensions:
+      - product
+      - cost_center
 principles:
-- name: Visibility
-  description: Pull provider invoices or usage exports until a self-serve usage feed is documented.
-- name: Allocation
-  description: Tag invoice line items to consuming business units in your FinOps store.
-- name: Optimization
-  description: Levers depend on the provider's billing model; review at renewal once reconciled.
-- name: Accountability
-  description: Assign a contract owner to review billing against negotiated terms.
+  - name: Visibility
+    description: >-
+      Pull Help Scout monthly invoices and AI Answers usage reports;
+      reconcile seats against the active user count in the Inbox API.
+  - name: Allocation
+    description: >-
+      Allocate seats by team or product (per inbox); allocate AI Answers
+      cost to the inbox driving the resolutions.
+  - name: Optimization
+    description: >-
+      Lock annual commitment for 16% discount; deactivate inactive
+      agents monthly; consolidate inboxes when possible.
+  - name: Accountability
+    description: >-
+      Designate Customer Support Operations as contract owner; review at
+      renewal and right-size tier (Standard vs Plus vs Pro).
 maintainers:
-- FN: Kin Lane
-  email: kin@apievangelist.com
+  - FN: Kin Lane
+    email: kin@apievangelist.com

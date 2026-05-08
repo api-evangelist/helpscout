@@ -5,32 +5,57 @@ provider: Help Scout
 providerId: helpscout
 created: '2026-05-08'
 modified: '2026-05-08'
-reconciled: false
+reconciled: true
 tags:
-- Customer Support
-- Help Desk
-- Email
-- Knowledge Base
-- SaaS
-- Rate Limiting
-- Quotas
-- Throttling
-description: Placeholder rate-limit artifact for Help Scout. Replace with real limits once the pipeline
-  researches the provider's rate-limit documentation.
-notes: Initial scaffold — limits have not yet been reconciled against the provider's documentation.
+  - Customer Support
+  - Help Desk
+  - Rate Limiting
+  - Throttling
+description: >-
+  Help Scout enforces an account-wide per-minute rate limit on its Inbox
+  API 2.0. Limits scale by plan tier and are shared across all users on the
+  same account. Write operations (POST, PUT, PATCH, DELETE) count as
+  2 requests against the limit.
 sources:
-- https://www.helpscout.com/
+  - https://developer.helpscout.com/mailbox-api/overview/rate-limiting/
+notes: >-
+  Specific per-minute thresholds vary by plan. Inspect X-RateLimit-Limit-
+  Minute / X-RateLimit-Remaining-Minute / X-RateLimit-Retry-After response
+  headers for live values.
 responseCodes:
   throttled: 429
 limits:
-- name: Default
-  scope: account
-  metric: varies
-  limit: see provider documentation
-  notes: Pending reconciliation.
+  - name: Per Account Per Minute
+    scope: account
+    metric: requests
+    notes: >-
+      Account-shared sliding-window limit per minute. Exceeded requests
+      return 429.
+  - name: Write Multiplier
+    scope: request
+    metric: weight
+    notes: >-
+      POST, PUT, PATCH, and DELETE requests count as 2 requests against
+      the per-minute account limit.
+  - name: Webhook Delivery
+    scope: subscription
+    metric: events
+    notes: >-
+      Webhook deliveries are signed with HMAC and retried on 5xx. Receivers
+      must respond 2xx within the platform timeout.
 policies:
-- name: Backoff Strategy
-  description: Clients should implement exponential backoff with jitter and honor any Retry-After header.
+  - name: Backoff Strategy
+    description: >-
+      Honor X-RateLimit-Retry-After. Implement exponential backoff with
+      jitter on 429 responses.
+  - name: Header Telemetry
+    description: >-
+      Track X-RateLimit-Remaining-Minute in your client and slow down
+      proactively when the headroom drops below 10 percent.
+  - name: Pagination
+    description: >-
+      Use page and size query parameters on list endpoints; conversation
+      list responses are paginated.
 maintainers:
-- FN: Kin Lane
-  email: kin@apievangelist.com
+  - FN: Kin Lane
+    email: kin@apievangelist.com
