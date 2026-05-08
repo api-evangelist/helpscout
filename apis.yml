@@ -30,6 +30,8 @@ apis:
         type: Documentation
       - url: https://developer.helpscout.com/mailbox-api/endpoints/conversations/list/
         type: API Reference
+      - url: openapi/helpscout-openapi.yml
+        type: OpenAPI
     description: >-
       Create, retrieve, list, update, and delete conversations including
       threads, attachments, custom fields, tags, and snooze states. Core
