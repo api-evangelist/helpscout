@@ -1,0 +1,13 @@
+{
+  "repo": "helpscout",
+  "feeds": [
+    {
+      "source": "https://www.helpscout.com/blog/",
+      "feed_url": "https://www.helpscout.com/feed.xml",
+      "title": "Help Scout",
+      "saved": 25
+    }
+  ],
+  "fetched": "2026-05-09T20:17:51Z",
+  "post_count": 25
+}
