@@ -1,0 +1,234 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Help Scout Mailbox API — Conversations
+  description: 'Help Scout Mailbox API — Conversations. 5 operations. Lead operation: List conversations. Self-contained Naftiko
+    capability covering one Helpscout business surface.'
+  tags:
+  - Helpscout
+  - Conversations
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    HELPSCOUT_API_KEY: HELPSCOUT_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: helpscout-conversations
+    baseUri: https://api.helpscout.net/v2
+    description: Help Scout Mailbox API — Conversations business capability. Self-contained, no shared references.
+    resources:
+    - name: conversations
+      path: /conversations
+      operations:
+      - name: listconversations
+        method: GET
+        description: List conversations
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: page
+          in: query
+          type: integer
+        - name: status
+          in: query
+          type: string
+      - name: createconversation
+        method: POST
+        description: Create conversation
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: conversations-id
+      path: /conversations/{id}
+      operations:
+      - name: getconversation
+        method: GET
+        description: Get conversation
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: id
+          in: path
+          type: integer
+          required: true
+      - name: updateconversation
+        method: PATCH
+        description: Update conversation
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: id
+          in: path
+          type: integer
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+      - name: deleteconversation
+        method: DELETE
+        description: Delete conversation
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: id
+          in: path
+          type: integer
+          required: true
+    authentication:
+      type: bearer
+      token: '{{env.HELPSCOUT_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: helpscout-conversations-rest
+    port: 8080
+    description: REST adapter for Help Scout Mailbox API — Conversations. One Spectral-compliant resource per consumed operation,
+      prefixed with /v1.
+    resources:
+    - path: /v1/conversations
+      name: conversations
+      description: REST surface for conversations.
+      operations:
+      - method: GET
+        name: listconversations
+        description: List conversations
+        call: helpscout-conversations.listconversations
+        with:
+          page: rest.page
+          status: rest.status
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: POST
+        name: createconversation
+        description: Create conversation
+        call: helpscout-conversations.createconversation
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/conversations/{id}
+      name: conversations-id
+      description: REST surface for conversations-id.
+      operations:
+      - method: GET
+        name: getconversation
+        description: Get conversation
+        call: helpscout-conversations.getconversation
+        with:
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: PATCH
+        name: updateconversation
+        description: Update conversation
+        call: helpscout-conversations.updateconversation
+        with:
+          id: rest.id
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: DELETE
+        name: deleteconversation
+        description: Delete conversation
+        call: helpscout-conversations.deleteconversation
+        with:
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: helpscout-conversations-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Help Scout Mailbox API — Conversations. One tool per consumed operation, routed inline through
+      this capability's consumes block.
+    tools:
+    - name: list-conversations
+      description: List conversations
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: helpscout-conversations.listconversations
+      with:
+        page: tools.page
+        status: tools.status
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: create-conversation
+      description: Create conversation
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: helpscout-conversations.createconversation
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-conversation
+      description: Get conversation
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: helpscout-conversations.getconversation
+      with:
+        id: tools.id
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: update-conversation
+      description: Update conversation
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: helpscout-conversations.updateconversation
+      with:
+        id: tools.id
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: delete-conversation
+      description: Delete conversation
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: helpscout-conversations.deleteconversation
+      with:
+        id: tools.id
+      outputParameters:
+      - type: object
+        mapping: $.

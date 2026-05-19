@@ -1,0 +1,70 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Help Scout Mailbox API — Workflows
+  description: 'Help Scout Mailbox API — Workflows. 1 operations. Lead operation: List workflows. Self-contained Naftiko capability
+    covering one Helpscout business surface.'
+  tags:
+  - Helpscout
+  - Workflows
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    HELPSCOUT_API_KEY: HELPSCOUT_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: helpscout-workflows
+    baseUri: https://api.helpscout.net/v2
+    description: Help Scout Mailbox API — Workflows business capability. Self-contained, no shared references.
+    resources:
+    - name: workflows
+      path: /workflows
+      operations:
+      - name: listworkflows
+        method: GET
+        description: List workflows
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    authentication:
+      type: bearer
+      token: '{{env.HELPSCOUT_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: helpscout-workflows-rest
+    port: 8080
+    description: REST adapter for Help Scout Mailbox API — Workflows. One Spectral-compliant resource per consumed operation,
+      prefixed with /v1.
+    resources:
+    - path: /v1/workflows
+      name: workflows
+      description: REST surface for workflows.
+      operations:
+      - method: GET
+        name: listworkflows
+        description: List workflows
+        call: helpscout-workflows.listworkflows
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: helpscout-workflows-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Help Scout Mailbox API — Workflows. One tool per consumed operation, routed inline through
+      this capability's consumes block.
+    tools:
+    - name: list-workflows
+      description: List workflows
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: helpscout-workflows.listworkflows
+      outputParameters:
+      - type: object
+        mapping: $.

@@ -1,0 +1,187 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Help Scout Mailbox API — Customers
+  description: 'Help Scout Mailbox API — Customers. 4 operations. Lead operation: List customers. Self-contained Naftiko capability
+    covering one Helpscout business surface.'
+  tags:
+  - Helpscout
+  - Customers
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    HELPSCOUT_API_KEY: HELPSCOUT_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: helpscout-customers
+    baseUri: https://api.helpscout.net/v2
+    description: Help Scout Mailbox API — Customers business capability. Self-contained, no shared references.
+    resources:
+    - name: customers
+      path: /customers
+      operations:
+      - name: listcustomers
+        method: GET
+        description: List customers
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: createcustomer
+        method: POST
+        description: Create customer
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: customers-id
+      path: /customers/{id}
+      operations:
+      - name: getcustomer
+        method: GET
+        description: Get customer
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: id
+          in: path
+          type: integer
+          required: true
+      - name: updatecustomer
+        method: PATCH
+        description: Update customer
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: id
+          in: path
+          type: integer
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    authentication:
+      type: bearer
+      token: '{{env.HELPSCOUT_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: helpscout-customers-rest
+    port: 8080
+    description: REST adapter for Help Scout Mailbox API — Customers. One Spectral-compliant resource per consumed operation,
+      prefixed with /v1.
+    resources:
+    - path: /v1/customers
+      name: customers
+      description: REST surface for customers.
+      operations:
+      - method: GET
+        name: listcustomers
+        description: List customers
+        call: helpscout-customers.listcustomers
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: POST
+        name: createcustomer
+        description: Create customer
+        call: helpscout-customers.createcustomer
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/customers/{id}
+      name: customers-id
+      description: REST surface for customers-id.
+      operations:
+      - method: GET
+        name: getcustomer
+        description: Get customer
+        call: helpscout-customers.getcustomer
+        with:
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: PATCH
+        name: updatecustomer
+        description: Update customer
+        call: helpscout-customers.updatecustomer
+        with:
+          id: rest.id
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: helpscout-customers-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Help Scout Mailbox API — Customers. One tool per consumed operation, routed inline through
+      this capability's consumes block.
+    tools:
+    - name: list-customers
+      description: List customers
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: helpscout-customers.listcustomers
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: create-customer
+      description: Create customer
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: helpscout-customers.createcustomer
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-customer
+      description: Get customer
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: helpscout-customers.getcustomer
+      with:
+        id: tools.id
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: update-customer
+      description: Update customer
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: helpscout-customers.updatecustomer
+      with:
+        id: tools.id
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.

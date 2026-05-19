@@ -1,0 +1,70 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Help Scout Mailbox API — Tags
+  description: 'Help Scout Mailbox API — Tags. 1 operations. Lead operation: List tags. Self-contained Naftiko capability
+    covering one Helpscout business surface.'
+  tags:
+  - Helpscout
+  - Tags
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    HELPSCOUT_API_KEY: HELPSCOUT_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: helpscout-tags
+    baseUri: https://api.helpscout.net/v2
+    description: Help Scout Mailbox API — Tags business capability. Self-contained, no shared references.
+    resources:
+    - name: tags
+      path: /tags
+      operations:
+      - name: listtags
+        method: GET
+        description: List tags
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    authentication:
+      type: bearer
+      token: '{{env.HELPSCOUT_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: helpscout-tags-rest
+    port: 8080
+    description: REST adapter for Help Scout Mailbox API — Tags. One Spectral-compliant resource per consumed operation, prefixed
+      with /v1.
+    resources:
+    - path: /v1/tags
+      name: tags
+      description: REST surface for tags.
+      operations:
+      - method: GET
+        name: listtags
+        description: List tags
+        call: helpscout-tags.listtags
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: helpscout-tags-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Help Scout Mailbox API — Tags. One tool per consumed operation, routed inline through this
+      capability's consumes block.
+    tools:
+    - name: list-tags
+      description: List tags
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: helpscout-tags.listtags
+      outputParameters:
+      - type: object
+        mapping: $.

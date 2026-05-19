@@ -1,0 +1,70 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Help Scout Mailbox API — Mailboxes
+  description: 'Help Scout Mailbox API — Mailboxes. 1 operations. Lead operation: List mailboxes. Self-contained Naftiko capability
+    covering one Helpscout business surface.'
+  tags:
+  - Helpscout
+  - Mailboxes
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    HELPSCOUT_API_KEY: HELPSCOUT_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: helpscout-mailboxes
+    baseUri: https://api.helpscout.net/v2
+    description: Help Scout Mailbox API — Mailboxes business capability. Self-contained, no shared references.
+    resources:
+    - name: mailboxes
+      path: /mailboxes
+      operations:
+      - name: listmailboxes
+        method: GET
+        description: List mailboxes
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    authentication:
+      type: bearer
+      token: '{{env.HELPSCOUT_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: helpscout-mailboxes-rest
+    port: 8080
+    description: REST adapter for Help Scout Mailbox API — Mailboxes. One Spectral-compliant resource per consumed operation,
+      prefixed with /v1.
+    resources:
+    - path: /v1/mailboxes
+      name: mailboxes
+      description: REST surface for mailboxes.
+      operations:
+      - method: GET
+        name: listmailboxes
+        description: List mailboxes
+        call: helpscout-mailboxes.listmailboxes
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: helpscout-mailboxes-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Help Scout Mailbox API — Mailboxes. One tool per consumed operation, routed inline through
+      this capability's consumes block.
+    tools:
+    - name: list-mailboxes
+      description: List mailboxes
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: helpscout-mailboxes.listmailboxes
+      outputParameters:
+      - type: object
+        mapping: $.
