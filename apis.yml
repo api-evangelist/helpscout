@@ -256,6 +256,8 @@ common:
   - https://developer.helpscout.com/
   - https://developer.helpscout.com/mailbox-api/overview/rate-limiting/
   updated: '2026-05-08'
+- type: LLMsTxt
+  url: https://developer.helpscout.com/llms.txt
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
