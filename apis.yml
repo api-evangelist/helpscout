@@ -14,7 +14,7 @@ tags:
 - Knowledge Base
 - SaaS
 created: '2026-05-08'
-modified: '2026-05-19'
+modified: '2026-05-30'
 specificationVersion: '0.19'
 apis:
 - aid: helpscout:helpscout-conversations-api
@@ -160,6 +160,8 @@ apis:
   properties:
   - url: https://developer.helpscout.com/webhooks/
     type: Documentation
+  - url: asyncapi/helpscout-webhooks-asyncapi.yml
+    type: AsyncAPI
   description: Subscribe to Help Scout events (convo.created, convo.assigned, convo.tag, customer.created, rating.received)
     for downstream automation. Webhooks include HMAC signatures for verification.
 - aid: helpscout:helpscout-docs-api

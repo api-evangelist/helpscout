@@ -1,0 +1,995 @@
+asyncapi: 2.6.0
+info:
+  title: Help Scout Webhooks
+  description: >-
+    Help Scout publishes webhook events from the Mailbox, Beacon, Docs, and
+    organization surfaces to subscriber-configured URLs. Each delivery is an
+    HTTP POST containing a JSON body, an X-HelpScout-Event header with the
+    event name, and an X-HelpScout-Signature header carrying an HMAC-SHA1
+    signature (base64 encoded) computed from the subscriber's shared secret
+    and the raw request body. Subscribers reply with a 2xx status to
+    acknowledge delivery; non-2xx responses are retried up to ten times, and
+    a 410 response immediately deactivates the webhook subscription. Generated
+    from public Help Scout developer documentation; verify before production
+    use.
+  version: '1.0'
+  contact:
+    name: Help Scout Developer Documentation
+    url: https://developer.helpscout.com/webhooks/
+  license:
+    name: Proprietary
+  x-generated-from: https://developer.helpscout.com/webhooks/
+  x-generated-by: claude-crawl-2026-05-30
+externalDocs:
+  description: Help Scout Webhooks documentation
+  url: https://developer.helpscout.com/webhooks/
+defaultContentType: application/json
+servers:
+  subscriber:
+    url: '{webhookUrl}'
+    protocol: https
+    description: >-
+      The HTTPS endpoint registered with Help Scout that receives outbound
+      webhook POST requests. The URL is configured per subscription in the
+      Help Scout app management UI or via the Mailbox API /v2/webhooks
+      resource.
+    variables:
+      webhookUrl:
+        description: >-
+          Fully qualified HTTPS URL of the subscriber-controlled endpoint that
+          accepts Help Scout webhook deliveries.
+        default: https://example.com/helpscout/webhook
+channels:
+  /webhook:
+    description: >-
+      Outbound webhook channel. Help Scout posts a JSON event payload to the
+      registered subscriber URL whenever a subscribed event occurs. The event
+      name is carried in the X-HelpScout-Event header and the request body is
+      signed with HMAC-SHA1 using the subscriber's shared secret. The signature
+      is delivered in the X-HelpScout-Signature header as a base64 string.
+    bindings:
+      http:
+        type: request
+        method: POST
+    publish:
+      operationId: receiveHelpScoutWebhook
+      summary: Receive a Help Scout webhook event
+      description: >-
+        Help Scout publishes events for conversations, customers, satisfaction
+        ratings, beacon chats, tags, organizations, users, and survey responses
+        to the subscriber URL. Subscribers must verify the X-HelpScout-Signature
+        header before processing the body and respond with HTTP 200-299 within
+        the timeout window. Return HTTP 410 to permanently disable the
+        webhook subscription; other non-2xx responses are retried up to ten
+        times and the subscription auto-deactivates after ten discarded events.
+      message:
+        oneOf:
+          - $ref: '#/components/messages/ConvoAssigned'
+          - $ref: '#/components/messages/ConvoCreated'
+          - $ref: '#/components/messages/ConvoAiAnswersCreated'
+          - $ref: '#/components/messages/ConvoDeleted'
+          - $ref: '#/components/messages/ConvoMerged'
+          - $ref: '#/components/messages/ConvoMoved'
+          - $ref: '#/components/messages/ConvoStatus'
+          - $ref: '#/components/messages/ConvoTags'
+          - $ref: '#/components/messages/ConvoCustomFields'
+          - $ref: '#/components/messages/ConvoCustomerReplyCreated'
+          - $ref: '#/components/messages/ConvoAgentReplyCreated'
+          - $ref: '#/components/messages/ConvoNoteCreated'
+          - $ref: '#/components/messages/CustomerCreated'
+          - $ref: '#/components/messages/CustomerUpdated'
+          - $ref: '#/components/messages/CustomerDeleted'
+          - $ref: '#/components/messages/SatisfactionRatings'
+          - $ref: '#/components/messages/BeaconChatCreated'
+          - $ref: '#/components/messages/BeaconChatCustomerReplied'
+          - $ref: '#/components/messages/TagCreated'
+          - $ref: '#/components/messages/TagUpdated'
+          - $ref: '#/components/messages/TagDeleted'
+          - $ref: '#/components/messages/MessageSurveyResponseReceived'
+          - $ref: '#/components/messages/OrganizationCreated'
+          - $ref: '#/components/messages/OrganizationUpdated'
+          - $ref: '#/components/messages/OrganizationDeleted'
+          - $ref: '#/components/messages/UserStatusChanged'
+components:
+  securitySchemes:
+    helpscoutSignature:
+      type: httpApiKey
+      in: header
+      name: X-HelpScout-Signature
+      description: >-
+        Base64-encoded HMAC-SHA1 signature of the raw request body, computed
+        with the shared secret configured on the webhook subscription.
+        Subscribers must recompute the signature on receipt and compare it
+        against this header in constant time before trusting the payload.
+  messageTraits:
+    HelpScoutWebhookHeaders:
+      headers:
+        type: object
+        required:
+          - X-HelpScout-Event
+          - X-HelpScout-Signature
+        properties:
+          X-HelpScout-Event:
+            type: string
+            description: >-
+              Name of the event that triggered the delivery, e.g.
+              convo.created, customer.updated, satisfaction.ratings.
+          X-HelpScout-Signature:
+            type: string
+            description: >-
+              Base64-encoded HMAC-SHA1 signature computed from the
+              subscriber's shared secret and the raw JSON request body.
+          Content-Type:
+            type: string
+            description: Always application/json for Help Scout webhook deliveries.
+            default: application/json
+          User-Agent:
+            type: string
+            description: Help Scout user agent identifying the delivery service.
+  messages:
+    ConvoAssigned:
+      name: convoAssigned
+      title: Conversation Assigned
+      summary: >-
+        Fired when a conversation is assigned to a Help Scout user or team.
+      contentType: application/json
+      traits:
+        - $ref: '#/components/messageTraits/HelpScoutWebhookHeaders'
+      payload:
+        $ref: '#/components/schemas/Conversation'
+    ConvoCreated:
+      name: convoCreated
+      title: Conversation Created
+      summary: >-
+        Fired when a new conversation is created in a Help Scout mailbox.
+      contentType: application/json
+      traits:
+        - $ref: '#/components/messageTraits/HelpScoutWebhookHeaders'
+      payload:
+        $ref: '#/components/schemas/Conversation'
+    ConvoAiAnswersCreated:
+      name: convoAiAnswersCreated
+      title: Conversation Created (AI Answers)
+      summary: >-
+        Fired when a conversation is created by Help Scout AI Answers.
+      contentType: application/json
+      traits:
+        - $ref: '#/components/messageTraits/HelpScoutWebhookHeaders'
+      payload:
+        $ref: '#/components/schemas/Conversation'
+    ConvoDeleted:
+      name: convoDeleted
+      title: Conversation Deleted
+      summary: >-
+        Fired when a conversation is deleted. Payload contains only the
+        deleted conversation identifier.
+      contentType: application/json
+      traits:
+        - $ref: '#/components/messageTraits/HelpScoutWebhookHeaders'
+      payload:
+        $ref: '#/components/schemas/DeletedResource'
+    ConvoMerged:
+      name: convoMerged
+      title: Conversation Merged
+      summary: >-
+        Fired when two conversations are merged into one.
+      contentType: application/json
+      traits:
+        - $ref: '#/components/messageTraits/HelpScoutWebhookHeaders'
+      payload:
+        $ref: '#/components/schemas/Conversation'
+    ConvoMoved:
+      name: convoMoved
+      title: Conversation Moved
+      summary: >-
+        Fired when a conversation is moved between Help Scout mailboxes.
+      contentType: application/json
+      traits:
+        - $ref: '#/components/messageTraits/HelpScoutWebhookHeaders'
+      payload:
+        $ref: '#/components/schemas/Conversation'
+    ConvoStatus:
+      name: convoStatus
+      title: Conversation Status Updated
+      summary: >-
+        Fired when a conversation's status changes, e.g. active, pending,
+        closed, spam.
+      contentType: application/json
+      traits:
+        - $ref: '#/components/messageTraits/HelpScoutWebhookHeaders'
+      payload:
+        $ref: '#/components/schemas/Conversation'
+    ConvoTags:
+      name: convoTags
+      title: Conversation Tags Updated
+      summary: >-
+        Fired when tags on a conversation are added or removed.
+      contentType: application/json
+      traits:
+        - $ref: '#/components/messageTraits/HelpScoutWebhookHeaders'
+      payload:
+        $ref: '#/components/schemas/Conversation'
+    ConvoCustomFields:
+      name: convoCustomFields
+      title: Conversation Custom Fields Updated
+      summary: >-
+        Fired when custom field values on a conversation are updated.
+      contentType: application/json
+      traits:
+        - $ref: '#/components/messageTraits/HelpScoutWebhookHeaders'
+      payload:
+        $ref: '#/components/schemas/Conversation'
+    ConvoCustomerReplyCreated:
+      name: convoCustomerReplyCreated
+      title: Customer Reply Created
+      summary: >-
+        Fired when a customer replies to a conversation, creating a new
+        customer thread.
+      contentType: application/json
+      traits:
+        - $ref: '#/components/messageTraits/HelpScoutWebhookHeaders'
+      payload:
+        $ref: '#/components/schemas/Conversation'
+    ConvoAgentReplyCreated:
+      name: convoAgentReplyCreated
+      title: Agent Reply Created
+      summary: >-
+        Fired when a Help Scout user (agent) replies to a conversation,
+        creating a new agent thread.
+      contentType: application/json
+      traits:
+        - $ref: '#/components/messageTraits/HelpScoutWebhookHeaders'
+      payload:
+        $ref: '#/components/schemas/Conversation'
+    ConvoNoteCreated:
+      name: convoNoteCreated
+      title: Note Created
+      summary: >-
+        Fired when an internal note is added to a conversation.
+      contentType: application/json
+      traits:
+        - $ref: '#/components/messageTraits/HelpScoutWebhookHeaders'
+      payload:
+        $ref: '#/components/schemas/Conversation'
+    CustomerCreated:
+      name: customerCreated
+      title: Customer Created
+      summary: >-
+        Fired when a new customer record is created. Triggers globally and
+        is not filterable by inbox.
+      contentType: application/json
+      traits:
+        - $ref: '#/components/messageTraits/HelpScoutWebhookHeaders'
+      payload:
+        $ref: '#/components/schemas/Customer'
+    CustomerUpdated:
+      name: customerUpdated
+      title: Customer Updated
+      summary: >-
+        Fired when a customer record is updated, including profile fields,
+        emails, phones, social profiles, addresses, or properties.
+      contentType: application/json
+      traits:
+        - $ref: '#/components/messageTraits/HelpScoutWebhookHeaders'
+      payload:
+        $ref: '#/components/schemas/Customer'
+    CustomerDeleted:
+      name: customerDeleted
+      title: Customer Deleted
+      summary: >-
+        Fired when a customer record is deleted. Payload contains only the
+        deleted customer identifier.
+      contentType: application/json
+      traits:
+        - $ref: '#/components/messageTraits/HelpScoutWebhookHeaders'
+      payload:
+        $ref: '#/components/schemas/DeletedResource'
+    SatisfactionRatings:
+      name: satisfactionRatings
+      title: Satisfaction Rating Received
+      summary: >-
+        Fired when a customer submits a satisfaction rating (great, okay,
+        not good) on a conversation thread.
+      contentType: application/json
+      traits:
+        - $ref: '#/components/messageTraits/HelpScoutWebhookHeaders'
+      payload:
+        $ref: '#/components/schemas/Rating'
+    BeaconChatCreated:
+      name: beaconChatCreated
+      title: Beacon Chat Created
+      summary: >-
+        Fired when a new Beacon live chat session is started by a visitor.
+      contentType: application/json
+      traits:
+        - $ref: '#/components/messageTraits/HelpScoutWebhookHeaders'
+      payload:
+        $ref: '#/components/schemas/BeaconChat'
+    BeaconChatCustomerReplied:
+      name: beaconChatCustomerReplied
+      title: Beacon Chat Customer Replied
+      summary: >-
+        Fired when a customer sends a new message in a Beacon chat session.
+      contentType: application/json
+      traits:
+        - $ref: '#/components/messageTraits/HelpScoutWebhookHeaders'
+      payload:
+        $ref: '#/components/schemas/BeaconChat'
+    TagCreated:
+      name: tagCreated
+      title: Tag Created
+      summary: >-
+        Fired when a new tag is created in the Help Scout account.
+      contentType: application/json
+      traits:
+        - $ref: '#/components/messageTraits/HelpScoutWebhookHeaders'
+      payload:
+        $ref: '#/components/schemas/Tag'
+    TagUpdated:
+      name: tagUpdated
+      title: Tag Updated
+      summary: >-
+        Fired when an existing tag's name or color is updated.
+      contentType: application/json
+      traits:
+        - $ref: '#/components/messageTraits/HelpScoutWebhookHeaders'
+      payload:
+        $ref: '#/components/schemas/Tag'
+    TagDeleted:
+      name: tagDeleted
+      title: Tag Deleted
+      summary: >-
+        Fired when a tag is deleted. Payload contains only the deleted
+        tag identifier.
+      contentType: application/json
+      traits:
+        - $ref: '#/components/messageTraits/HelpScoutWebhookHeaders'
+      payload:
+        $ref: '#/components/schemas/DeletedResource'
+    MessageSurveyResponseReceived:
+      name: messageSurveyResponseReceived
+      title: Survey Response Received
+      summary: >-
+        Fired when a customer submits a response to a Help Scout message
+        survey.
+      contentType: application/json
+      traits:
+        - $ref: '#/components/messageTraits/HelpScoutWebhookHeaders'
+      payload:
+        $ref: '#/components/schemas/SurveyResponse'
+    OrganizationCreated:
+      name: organizationCreated
+      title: Organization Created
+      summary: >-
+        Fired when a new organization is created in the Help Scout account.
+      contentType: application/json
+      traits:
+        - $ref: '#/components/messageTraits/HelpScoutWebhookHeaders'
+      payload:
+        $ref: '#/components/schemas/Organization'
+    OrganizationUpdated:
+      name: organizationUpdated
+      title: Organization Updated
+      summary: >-
+        Fired when an organization record is updated.
+      contentType: application/json
+      traits:
+        - $ref: '#/components/messageTraits/HelpScoutWebhookHeaders'
+      payload:
+        $ref: '#/components/schemas/Organization'
+    OrganizationDeleted:
+      name: organizationDeleted
+      title: Organization Deleted
+      summary: >-
+        Fired when an organization is deleted. Payload contains only the
+        deleted organization identifier.
+      contentType: application/json
+      traits:
+        - $ref: '#/components/messageTraits/HelpScoutWebhookHeaders'
+      payload:
+        $ref: '#/components/schemas/DeletedResource'
+    UserStatusChanged:
+      name: userStatusChanged
+      title: User Status Changed
+      summary: >-
+        Fired when a Help Scout user's online/offline status changes.
+      contentType: application/json
+      traits:
+        - $ref: '#/components/messageTraits/HelpScoutWebhookHeaders'
+      payload:
+        $ref: '#/components/schemas/UserStatus'
+  schemas:
+    Conversation:
+      type: object
+      description: >-
+        Help Scout Mailbox API v2 Conversation resource as delivered in
+        webhook payloads for convo.* events. Field set mirrors the
+        Conversations resource of the Mailbox API.
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Unique conversation identifier.
+        number:
+          type: integer
+          description: Human-readable conversation number displayed in the UI.
+        threads:
+          type: integer
+          description: Total number of threads on the conversation.
+        type:
+          type: string
+          description: >-
+            Type of the conversation, e.g. email, chat, phone.
+        folderId:
+          type: integer
+          description: Identifier of the folder the conversation lives in.
+        status:
+          type: string
+          description: >-
+            Conversation status, e.g. active, pending, closed, spam.
+        state:
+          type: string
+          description: >-
+            Conversation state, e.g. published, draft, deleted.
+        subject:
+          type: string
+          description: Conversation subject line.
+        preview:
+          type: string
+          description: Short text preview of the most recent thread.
+        mailboxId:
+          type: integer
+          description: Identifier of the Help Scout mailbox the conversation belongs to.
+        assignee:
+          type: object
+          nullable: true
+          description: Help Scout user currently assigned to the conversation.
+          properties:
+            id:
+              type: integer
+              format: int64
+            type:
+              type: string
+            first:
+              type: string
+            last:
+              type: string
+            email:
+              type: string
+              format: email
+        createdBy:
+          type: object
+          description: The actor that created the conversation.
+          properties:
+            id:
+              type: integer
+              format: int64
+            type:
+              type: string
+              description: Actor type, e.g. user or customer.
+            email:
+              type: string
+              format: email
+        primaryCustomer:
+          type: object
+          description: Primary customer associated with the conversation.
+          properties:
+            id:
+              type: integer
+              format: int64
+            type:
+              type: string
+            first:
+              type: string
+            last:
+              type: string
+            email:
+              type: string
+              format: email
+        customerWaitingSince:
+          type: object
+          description: Information about how long the customer has been waiting.
+          properties:
+            time:
+              type: string
+              format: date-time
+            friendly:
+              type: string
+            latestReplyFrom:
+              type: string
+        source:
+          type: object
+          description: Source of the conversation.
+          properties:
+            type:
+              type: string
+            via:
+              type: string
+        tags:
+          type: array
+          description: Tags applied to the conversation.
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                format: int64
+              tag:
+                type: string
+              color:
+                type: string
+        cc:
+          type: array
+          description: Email addresses on the CC list.
+          items:
+            type: string
+            format: email
+        bcc:
+          type: array
+          description: Email addresses on the BCC list.
+          items:
+            type: string
+            format: email
+        customFields:
+          type: array
+          description: Custom field values applied to the conversation.
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              name:
+                type: string
+              value:
+                type: string
+              text:
+                type: string
+        createdAt:
+          type: string
+          format: date-time
+          description: Timestamp the conversation was created.
+        userUpdatedAt:
+          type: string
+          format: date-time
+          description: Timestamp the conversation was last updated by a user.
+        closedAt:
+          type: string
+          format: date-time
+          nullable: true
+          description: Timestamp the conversation was closed.
+        closedBy:
+          type: integer
+          format: int64
+          nullable: true
+          description: Identifier of the user that closed the conversation.
+        _embedded:
+          type: object
+          description: >-
+            Embedded resources such as threads attached to the conversation
+            for convo.customer.reply.created, convo.agent.reply.created, and
+            convo.note.created events.
+          additionalProperties: true
+        _links:
+          type: object
+          description: HATEOAS hypermedia links for the conversation resource.
+          additionalProperties: true
+    Customer:
+      type: object
+      description: >-
+        Help Scout Mailbox API v2 Customer resource as delivered in webhook
+        payloads for customer.created and customer.updated events.
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Unique customer identifier.
+        firstName:
+          type: string
+          description: Customer first name.
+        lastName:
+          type: string
+          description: Customer last name.
+        gender:
+          type: string
+          nullable: true
+          description: Customer gender.
+        jobTitle:
+          type: string
+          nullable: true
+          description: Customer job title.
+        location:
+          type: string
+          nullable: true
+          description: Customer location string.
+        organization:
+          type: string
+          nullable: true
+          description: Customer organization name.
+        photoUrl:
+          type: string
+          format: uri
+          nullable: true
+          description: URL of the customer photo.
+        photoType:
+          type: string
+          nullable: true
+          description: Source type of the customer photo.
+        background:
+          type: string
+          nullable: true
+          description: Background notes about the customer.
+        age:
+          type: string
+          nullable: true
+          description: Customer age range.
+        emails:
+          type: array
+          description: Email addresses associated with the customer.
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                format: int64
+              value:
+                type: string
+                format: email
+              type:
+                type: string
+        phones:
+          type: array
+          description: Phone numbers associated with the customer.
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                format: int64
+              value:
+                type: string
+              type:
+                type: string
+        chats:
+          type: array
+          description: Chat handles associated with the customer.
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                format: int64
+              value:
+                type: string
+              type:
+                type: string
+        socialProfiles:
+          type: array
+          description: Social profiles associated with the customer.
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                format: int64
+              value:
+                type: string
+              type:
+                type: string
+        websites:
+          type: array
+          description: Websites associated with the customer.
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                format: int64
+              value:
+                type: string
+                format: uri
+        address:
+          type: object
+          nullable: true
+          description: Customer mailing address.
+          properties:
+            id:
+              type: integer
+              format: int64
+            lines:
+              type: array
+              items:
+                type: string
+            city:
+              type: string
+            state:
+              type: string
+            postalCode:
+              type: string
+            country:
+              type: string
+            createdAt:
+              type: string
+              format: date-time
+            modifiedAt:
+              type: string
+              format: date-time
+        properties:
+          type: object
+          description: Custom customer properties keyed by slug.
+          additionalProperties: true
+        createdAt:
+          type: string
+          format: date-time
+          description: Timestamp the customer was created.
+        updatedAt:
+          type: string
+          format: date-time
+          description: Timestamp the customer was last updated.
+        _links:
+          type: object
+          description: HATEOAS hypermedia links for the customer resource.
+          additionalProperties: true
+    Rating:
+      type: object
+      description: >-
+        Help Scout Mailbox API v2 Rating resource as delivered in webhook
+        payloads for satisfaction.ratings events.
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Unique rating identifier.
+        rating:
+          type: string
+          description: >-
+            Rating value, e.g. Great, Okay, Not Good.
+        comments:
+          type: string
+          nullable: true
+          description: Optional customer comments accompanying the rating.
+        customerId:
+          type: integer
+          format: int64
+          description: Identifier of the customer that submitted the rating.
+        customerName:
+          type: string
+          description: Display name of the rating customer.
+        conversationId:
+          type: integer
+          format: int64
+          description: Identifier of the conversation that was rated.
+        conversationNumber:
+          type: integer
+          description: Human-readable conversation number that was rated.
+        conversationSubject:
+          type: string
+          description: Subject line of the rated conversation.
+        threadId:
+          type: integer
+          format: int64
+          description: Identifier of the thread that was rated.
+        mailboxId:
+          type: integer
+          format: int64
+          description: Identifier of the mailbox containing the rated conversation.
+        userId:
+          type: integer
+          format: int64
+          description: >-
+            Identifier of the Help Scout user (agent) whose response was
+            rated.
+        userName:
+          type: string
+          description: Display name of the rated user.
+        createdAt:
+          type: string
+          format: date-time
+          description: Timestamp the rating was submitted.
+        modifiedAt:
+          type: string
+          format: date-time
+          description: Timestamp the rating was last modified.
+        _links:
+          type: object
+          description: HATEOAS hypermedia links for the rating resource.
+          additionalProperties: true
+    BeaconChat:
+      type: object
+      description: >-
+        Beacon live chat session payload delivered for beacon.chat.created
+        and beacon.chat.customer.replied events.
+      properties:
+        id:
+          type: string
+          description: Unique Beacon chat identifier.
+        beaconId:
+          type: string
+          description: Identifier of the Beacon configuration.
+        mailboxId:
+          type: integer
+          format: int64
+          description: Identifier of the Help Scout mailbox handling the chat.
+        customer:
+          type: object
+          description: Customer participating in the chat.
+          properties:
+            id:
+              type: integer
+              format: int64
+            email:
+              type: string
+              format: email
+            firstName:
+              type: string
+            lastName:
+              type: string
+        message:
+          type: object
+          description: Latest message in the chat session.
+          properties:
+            id:
+              type: string
+            body:
+              type: string
+            createdAt:
+              type: string
+              format: date-time
+        status:
+          type: string
+          description: Chat session status.
+        createdAt:
+          type: string
+          format: date-time
+          description: Timestamp the chat session was created.
+        updatedAt:
+          type: string
+          format: date-time
+          description: Timestamp the chat session was last updated.
+    Tag:
+      type: object
+      description: >-
+        Help Scout Mailbox API v2 Tag resource delivered for tag.created
+        and tag.updated events.
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Unique tag identifier.
+        slug:
+          type: string
+          description: Lowercase slug for the tag.
+        name:
+          type: string
+          description: Display name of the tag.
+        color:
+          type: string
+          description: Tag color hex value.
+        ticketCount:
+          type: integer
+          description: Number of conversations the tag is applied to.
+        createdAt:
+          type: string
+          format: date-time
+          description: Timestamp the tag was created.
+        modifiedAt:
+          type: string
+          format: date-time
+          description: Timestamp the tag was last modified.
+        _links:
+          type: object
+          description: HATEOAS hypermedia links for the tag resource.
+          additionalProperties: true
+    SurveyResponse:
+      type: object
+      description: >-
+        Survey response payload delivered for the message.survey.response.received
+        event. Fields reflect the message survey product and the responding
+        customer.
+      properties:
+        id:
+          type: string
+          description: Unique survey response identifier.
+        surveyId:
+          type: string
+          description: Identifier of the survey that received the response.
+        surveyName:
+          type: string
+          description: Display name of the survey.
+        customer:
+          type: object
+          description: Customer that submitted the survey response.
+          properties:
+            id:
+              type: integer
+              format: int64
+            email:
+              type: string
+              format: email
+            firstName:
+              type: string
+            lastName:
+              type: string
+        responses:
+          type: array
+          description: Individual question responses on the survey.
+          items:
+            type: object
+            properties:
+              questionId:
+                type: string
+              question:
+                type: string
+              answer:
+                type: string
+        createdAt:
+          type: string
+          format: date-time
+          description: Timestamp the response was submitted.
+    Organization:
+      type: object
+      description: >-
+        Organization resource delivered for organization.created and
+        organization.updated events.
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Unique organization identifier.
+        name:
+          type: string
+          description: Display name of the organization.
+        domain:
+          type: string
+          nullable: true
+          description: Primary domain associated with the organization.
+        notes:
+          type: string
+          nullable: true
+          description: Free-form notes attached to the organization.
+        createdAt:
+          type: string
+          format: date-time
+          description: Timestamp the organization was created.
+        updatedAt:
+          type: string
+          format: date-time
+          description: Timestamp the organization was last updated.
+    UserStatus:
+      type: object
+      description: >-
+        Payload delivered for user.status.changed events when a Help Scout
+        user goes online or offline.
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Unique Help Scout user identifier.
+        firstName:
+          type: string
+          description: User first name.
+        lastName:
+          type: string
+          description: User last name.
+        email:
+          type: string
+          format: email
+          description: User email address.
+        status:
+          type: string
+          description: New status value, e.g. online, offline, away.
+        changedAt:
+          type: string
+          format: date-time
+          description: Timestamp the status change occurred.
+    DeletedResource:
+      type: object
+      description: >-
+        Minimal payload delivered for *.deleted events. Contains only the
+        identifier of the removed resource.
+      properties:
+        id:
+          oneOf:
+            - type: integer
+              format: int64
+            - type: string
+          description: Identifier of the deleted resource.
