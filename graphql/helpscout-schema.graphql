@@ -1,0 +1,1391 @@
+"""
+Help Scout GraphQL Schema
+Derived from Help Scout Mailbox API v2, Docs API, Beacon API, and Webhooks.
+REST base: https://api.helpscout.net/v2
+Docs: https://developer.helpscout.com/mailbox-api/
+"""
+
+# ---------------------------------------------------------------------------
+# Scalars
+# ---------------------------------------------------------------------------
+
+scalar DateTime
+scalar JSON
+scalar URL
+
+# ---------------------------------------------------------------------------
+# Enums
+# ---------------------------------------------------------------------------
+
+enum ConversationStatus {
+  ACTIVE
+  PENDING
+  CLOSED
+  SPAM
+}
+
+enum ConversationType {
+  EMAIL
+  CHAT
+  PHONE
+}
+
+enum FolderType {
+  UNASSIGNED
+  MINE
+  DRAFTS
+  ASSIGNED
+  CLOSED
+  SPAM
+  OPEN
+  DELETED
+  PENDING
+}
+
+enum ThreadType {
+  CUSTOMER
+  MESSAGE
+  NOTE
+  PHONE
+  CHAT
+  FORWARD
+}
+
+enum TaskStatus {
+  OPEN
+  CLOSED
+}
+
+enum UserRole {
+  OWNER
+  ADMIN
+  USER
+  VIEWER
+}
+
+enum RatingStar {
+  GREAT
+  OKAY
+  NOT_GOOD
+}
+
+enum ReportType {
+  COMPANY
+  CONVERSATION
+  HAPPINESS
+  USER
+  TEAM
+  PRODUCTIVITY
+  EMAIL
+  DOCS
+  CHAT
+  PHONE
+}
+
+enum WorkflowStatus {
+  ENABLED
+  DISABLED
+}
+
+enum CustomPropertyType {
+  TEXT
+  NUMBER
+  DATE
+  CHECKBOX
+  DROPDOWN
+  MULTI_SELECT
+}
+
+enum WebhookEventType {
+  CONVO_CREATED
+  CONVO_UPDATED
+  CONVO_DELETED
+  CONVO_ASSIGNED
+  CONVO_UNASSIGNED
+  CONVO_MOVED
+  CONVO_MERGED
+  CONVO_STATUS
+  CONVO_TAGS
+  CONVO_CUSTOM_FIELDS
+  CONVO_NOTE
+  CUSTOMER_CREATED
+  CUSTOMER_UPDATED
+  RATING_RECEIVED
+  SATISFACTION_RATINGS_ENABLED
+}
+
+enum BeaconMode {
+  SELF_SERVE
+  ASK_FIRST
+  NEUTRAL
+}
+
+enum ConversationSource {
+  EMAIL
+  API
+  CHAT
+  PHONE
+  BEACON
+  IMPORT
+}
+
+# ---------------------------------------------------------------------------
+# Pagination
+# ---------------------------------------------------------------------------
+
+type PageInfo {
+  hasPreviousPage: Boolean!
+  hasNextPage: Boolean!
+  startCursor: String
+  endCursor: String
+  totalCount: Int!
+  totalPages: Int!
+  page: Int!
+  size: Int!
+}
+
+type ConversationEdge {
+  cursor: String!
+  node: Conversation!
+}
+
+type ConversationConnection {
+  edges: [ConversationEdge!]!
+  pageInfo: PageInfo!
+}
+
+type CustomerEdge {
+  cursor: String!
+  node: Customer!
+}
+
+type CustomerConnection {
+  edges: [CustomerEdge!]!
+  pageInfo: PageInfo!
+}
+
+type UserEdge {
+  cursor: String!
+  node: User!
+}
+
+type UserConnection {
+  edges: [UserEdge!]!
+  pageInfo: PageInfo!
+}
+
+# ---------------------------------------------------------------------------
+# Mailboxes
+# ---------------------------------------------------------------------------
+
+"""A Help Scout inbox / mailbox."""
+type Mailbox {
+  id: ID!
+  name: String!
+  slug: String!
+  email: String
+  details: MailboxDetails
+  folders: [Folder!]!
+  customFields: [MailboxCustomField!]!
+  replyTemplates: [ReplyTemplate!]!
+  createdAt: DateTime
+  updatedAt: DateTime
+}
+
+"""Extended mailbox metadata."""
+type MailboxDetails {
+  id: ID!
+  name: String!
+  slug: String!
+  email: MailboxEmail
+  settings: MailboxSettings
+  createdAt: DateTime
+  updatedAt: DateTime
+}
+
+"""Email address configuration for a mailbox."""
+type MailboxEmail {
+  id: ID!
+  value: String!
+  isDefault: Boolean!
+}
+
+"""Routing and display settings for a mailbox."""
+type MailboxSettings {
+  previousConversationEnabled: Boolean
+  replyPlusEnabled: Boolean
+  bccEnabled: Boolean
+  customEmailSignatureEnabled: Boolean
+  defaultMessageType: String
+  ticketValidation: Boolean
+}
+
+"""A custom field definition attached to a mailbox."""
+type MailboxCustomField {
+  id: ID!
+  name: String!
+  fieldType: CustomPropertyType!
+  required: Boolean!
+  options: [String!]
+  order: Int
+}
+
+# ---------------------------------------------------------------------------
+# Folders
+# ---------------------------------------------------------------------------
+
+"""A conversation folder within a mailbox."""
+type Folder {
+  id: ID!
+  name: String!
+  type: FolderType!
+  activeCount: Int!
+  totalCount: Int!
+  userId: ID
+  updatedAt: DateTime
+}
+
+# ---------------------------------------------------------------------------
+# Conversations
+# ---------------------------------------------------------------------------
+
+"""A Help Scout conversation (ticket / thread group)."""
+type Conversation {
+  id: ID!
+  number: Int!
+  subject: String!
+  status: ConversationStatus!
+  type: ConversationType!
+  source: ConversationSource
+  mailbox: Mailbox
+  assignedTo: User
+  closedBy: User
+  closedByUser: User
+  folder: Folder
+  tags: [Tag!]!
+  threads: [Thread!]!
+  customFields: [ConversationCustomField!]!
+  customer: Customer
+  rating: Rating
+  firstResponseTime: Int
+  waitingSince: DateTime
+  snoozedUntil: DateTime
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  closedAt: DateTime
+}
+
+"""Full conversation detail including embedded relationships."""
+type ConversationDetails {
+  id: ID!
+  number: Int!
+  subject: String!
+  status: ConversationStatus!
+  type: ConversationType!
+  source: ConversationSource
+  mailbox: MailboxDetails
+  assignedTo: UserDetails
+  threads: [Thread!]!
+  customFields: [ConversationCustomField!]!
+  tags: [TagDetails!]!
+  customer: CustomerDetails
+  rating: Rating
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+"""A custom field value on a specific conversation."""
+type ConversationCustomField {
+  id: ID!
+  fieldId: ID!
+  name: String!
+  value: String
+  fieldType: CustomPropertyType!
+}
+
+# ---------------------------------------------------------------------------
+# Threads
+# ---------------------------------------------------------------------------
+
+"""A single thread (reply, note, phone log, chat message) on a conversation."""
+type Thread {
+  id: ID!
+  type: ThreadType!
+  status: String
+  state: String
+  action: ThreadAction
+  customer: ThreadCustomer
+  createdBy: User
+  assignedTo: User
+  savedReplyId: ID
+  from: ThreadCustomer
+  to: [ThreadCustomer!]
+  cc: [ThreadCustomer!]
+  bcc: [ThreadCustomer!]
+  body: String
+  source: ConversationSource
+  attachments: [Attachment!]!
+  openedAt: DateTime
+  createdAt: DateTime!
+  updatedAt: DateTime
+}
+
+"""Email reply thread."""
+type EmailThread {
+  id: ID!
+  type: ThreadType!
+  body: String!
+  from: ThreadCustomer!
+  to: [ThreadCustomer!]!
+  cc: [ThreadCustomer!]
+  bcc: [ThreadCustomer!]
+  subject: String
+  attachments: [Attachment!]!
+  createdAt: DateTime!
+}
+
+"""Internal note thread (not visible to customer)."""
+type NoteThread {
+  id: ID!
+  type: ThreadType!
+  body: String!
+  createdBy: User!
+  attachments: [Attachment!]!
+  createdAt: DateTime!
+}
+
+"""Phone call log thread."""
+type PhoneThread {
+  id: ID!
+  type: ThreadType!
+  body: String
+  customer: ThreadCustomer
+  createdBy: User!
+  createdAt: DateTime!
+}
+
+"""Chat session thread."""
+type ChatThread {
+  id: ID!
+  type: ThreadType!
+  body: String
+  customer: ThreadCustomer
+  createdBy: User
+  createdAt: DateTime!
+}
+
+"""Forwarded email thread."""
+type ForwardThread {
+  id: ID!
+  type: ThreadType!
+  body: String
+  to: [ThreadCustomer!]!
+  from: ThreadCustomer!
+  attachments: [Attachment!]!
+  createdAt: DateTime!
+}
+
+"""A customer reference within a thread."""
+type ThreadCustomer {
+  id: ID
+  type: String
+  first: String
+  last: String
+  fullName: String
+  email: String
+  phone: String
+}
+
+"""An action event recorded on a thread (assigned, unassigned, tagged, etc.)."""
+type ThreadAction {
+  associatedEntities: [AssociatedEntity!]
+  text: String
+  type: String
+}
+
+"""An entity referenced by a thread action."""
+type AssociatedEntity {
+  id: ID
+  type: String
+  value: String
+}
+
+"""A file attachment on a thread."""
+type Attachment {
+  id: ID!
+  filename: String!
+  mimeType: String!
+  size: Int!
+  width: Int
+  height: Int
+  url: URL
+  thumbnailUrl: URL
+  createdAt: DateTime
+}
+
+# ---------------------------------------------------------------------------
+# Tasks
+# ---------------------------------------------------------------------------
+
+"""A task (to-do item) linked to a conversation."""
+type Task {
+  id: ID!
+  text: String!
+  status: TaskStatus!
+  dueAt: DateTime
+  assignedTo: User
+  createdBy: User
+  createdAt: DateTime!
+  updatedAt: DateTime
+}
+
+# ---------------------------------------------------------------------------
+# Customers
+# ---------------------------------------------------------------------------
+
+"""A Help Scout customer / contact."""
+type Customer {
+  id: ID!
+  firstName: String
+  lastName: String
+  fullName: String
+  gender: String
+  age: String
+  organization: String
+  jobTitle: String
+  location: String
+  timeZone: String
+  photoUrl: URL
+  photoType: String
+  background: String
+  emails: [CustomerEmail!]!
+  phones: [CustomerPhone!]!
+  address: CustomerAddress
+  socialProfiles: [CustomerSocial!]!
+  websites: [CustomerSocial!]!
+  chats: [CustomerSocial!]!
+  properties: [CustomerProperty!]!
+  notes: CustomerNotes
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+"""Full customer detail with embedded properties."""
+type CustomerDetails {
+  id: ID!
+  firstName: String
+  lastName: String
+  fullName: String
+  organization: String
+  jobTitle: String
+  location: String
+  timeZone: String
+  photoUrl: URL
+  background: String
+  emails: [CustomerEmail!]!
+  phones: [CustomerPhone!]!
+  address: CustomerAddress
+  socialProfiles: [CustomerSocial!]!
+  properties: [CustomerProperty!]!
+  notes: CustomerNotes
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+"""An email address belonging to a customer."""
+type CustomerEmail {
+  id: ID!
+  value: String!
+  type: String
+}
+
+"""A phone number belonging to a customer."""
+type CustomerPhone {
+  id: ID!
+  value: String!
+  type: String
+}
+
+"""A postal address for a customer."""
+type CustomerAddress {
+  id: ID!
+  lines: [String!]
+  city: String
+  state: String
+  postalCode: String
+  country: String
+  createdAt: DateTime
+  updatedAt: DateTime
+}
+
+"""A social profile, chat handle, or website for a customer."""
+type CustomerSocial {
+  id: ID!
+  value: String!
+  type: String
+}
+
+"""Background notes stored on a customer."""
+type CustomerNotes {
+  notes: String
+  updatedAt: DateTime
+}
+
+"""A custom property value on a customer record."""
+type CustomerProperty {
+  id: ID!
+  fieldId: ID!
+  name: String!
+  value: String
+  fieldType: CustomPropertyType!
+}
+
+# ---------------------------------------------------------------------------
+# Tags
+# ---------------------------------------------------------------------------
+
+"""A tag that can be applied to conversations."""
+type Tag {
+  id: ID!
+  color: String
+  name: String!
+  slug: String!
+}
+
+"""Tag with extended metadata."""
+type TagDetails {
+  id: ID!
+  color: String
+  name: String!
+  slug: String!
+  ticketCount: Int
+  createdAt: DateTime
+  updatedAt: DateTime
+}
+
+# ---------------------------------------------------------------------------
+# Users
+# ---------------------------------------------------------------------------
+
+"""A Help Scout agent / user account."""
+type User {
+  id: ID!
+  firstName: String!
+  lastName: String!
+  fullName: String!
+  email: String!
+  role: UserRole!
+  photoUrl: URL
+  timezone: String
+  online: Boolean
+  createdAt: DateTime
+  updatedAt: DateTime
+}
+
+"""Extended user detail."""
+type UserDetails {
+  id: ID!
+  firstName: String!
+  lastName: String!
+  fullName: String!
+  email: String!
+  role: UserRole!
+  photoUrl: URL
+  timezone: String
+  online: Boolean
+  teams: [Team!]!
+  createdAt: DateTime
+  updatedAt: DateTime
+}
+
+# ---------------------------------------------------------------------------
+# Teams
+# ---------------------------------------------------------------------------
+
+"""A Help Scout team that groups users for routing."""
+type Team {
+  id: ID!
+  name: String!
+  initials: String
+  backgroundColor: String
+  photoUrl: URL
+  createdAt: DateTime
+  updatedAt: DateTime
+}
+
+"""Team with member list."""
+type TeamDetails {
+  id: ID!
+  name: String!
+  initials: String
+  backgroundColor: String
+  photoUrl: URL
+  members: [TeamMember!]!
+  createdAt: DateTime
+  updatedAt: DateTime
+}
+
+"""A user's membership in a team."""
+type TeamMember {
+  user: User!
+  role: UserRole
+}
+
+# ---------------------------------------------------------------------------
+# Ratings
+# ---------------------------------------------------------------------------
+
+"""A customer satisfaction rating on a conversation."""
+type Rating {
+  id: ID!
+  conversationId: ID!
+  rating: RatingStar!
+  comments: String
+  ratedAt: DateTime!
+  customer: Customer
+  assignedTo: User
+}
+
+# ---------------------------------------------------------------------------
+# Reports
+# ---------------------------------------------------------------------------
+
+"""Aggregate report data across the account."""
+type ConversationReport {
+  type: ReportType!
+  startDate: DateTime!
+  endDate: DateTime!
+  mailboxIds: [ID!]
+  previousCount: Int
+  currentCount: Int
+  deltaPercent: Float
+  byDate: [ReportDataPoint!]!
+  byUser: [UserReport!]!
+  byTag: [TagReport!]!
+}
+
+"""Happiness / CSAT report."""
+type HappinessReport {
+  type: ReportType!
+  startDate: DateTime!
+  endDate: DateTime!
+  great: Int!
+  okay: Int!
+  notGood: Int!
+  total: Int!
+  score: Float!
+  byDate: [ReportDataPoint!]!
+  topics: [HappinessTopic!]!
+}
+
+"""Per-user report metrics."""
+type UserReport {
+  user: User!
+  conversationCount: Int!
+  repliesCount: Int!
+  resolutionsCount: Int!
+  firstResponseTime: Float
+  resolutionTime: Float
+  happinessScore: Float
+}
+
+"""Per-tag report aggregation."""
+type TagReport {
+  tag: Tag!
+  conversationCount: Int!
+}
+
+"""Happiness breakdown by topic or tag."""
+type HappinessTopic {
+  label: String!
+  great: Int!
+  okay: Int!
+  notGood: Int!
+}
+
+"""A time-series data point in a report."""
+type ReportDataPoint {
+  date: DateTime!
+  count: Int!
+}
+
+"""Productivity report metrics."""
+type ProductivityReport {
+  type: ReportType!
+  startDate: DateTime!
+  endDate: DateTime!
+  totalConversations: Int!
+  conversationsCreated: Int!
+  conversationsClosed: Int!
+  repliesSent: Int!
+  firstResponseTime: Float
+  resolutionTime: Float
+}
+
+# ---------------------------------------------------------------------------
+# Workflows
+# ---------------------------------------------------------------------------
+
+"""An automation workflow in Help Scout."""
+type Workflow {
+  id: ID!
+  mailboxId: ID!
+  type: String!
+  status: WorkflowStatus!
+  order: Int!
+  name: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+"""Workflow with condition and action details."""
+type WorkflowDetails {
+  id: ID!
+  mailboxId: ID!
+  type: String!
+  status: WorkflowStatus!
+  order: Int!
+  name: String!
+  conditions: [WorkflowCondition!]!
+  actions: [WorkflowAction!]!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+"""A condition that triggers or filters a workflow."""
+type WorkflowCondition {
+  type: String!
+  field: String!
+  operator: String!
+  value: String!
+}
+
+"""An action performed by a workflow when conditions are met."""
+type WorkflowAction {
+  type: String!
+  value: String
+}
+
+# ---------------------------------------------------------------------------
+# Reply Templates (Saved Replies)
+# ---------------------------------------------------------------------------
+
+"""A canned / saved reply template for agent use."""
+type ReplyTemplate {
+  id: ID!
+  mailboxId: ID
+  name: String!
+  subject: String
+  body: String!
+  createdBy: User
+  category: ReplyTemplateCategory
+  createdAt: DateTime
+  updatedAt: DateTime
+}
+
+"""A category grouping saved reply templates."""
+type ReplyTemplateCategory {
+  id: ID!
+  name: String!
+}
+
+# ---------------------------------------------------------------------------
+# Saved Searches
+# ---------------------------------------------------------------------------
+
+"""A saved conversation search filter."""
+type SavedSearch {
+  id: ID!
+  name: String!
+  query: String!
+  mailboxId: ID
+  userId: ID
+  createdAt: DateTime
+  updatedAt: DateTime
+}
+
+# ---------------------------------------------------------------------------
+# Custom Properties
+# ---------------------------------------------------------------------------
+
+"""A custom property definition (account level)."""
+type CustomProperty {
+  id: ID!
+  name: String!
+  slug: String!
+  fieldType: CustomPropertyType!
+  required: Boolean!
+  order: Int
+  options: [CustomPropertyOption!]!
+  createdAt: DateTime
+  updatedAt: DateTime
+}
+
+"""An option for a dropdown or multi-select custom property."""
+type CustomPropertyOption {
+  id: ID!
+  label: String!
+  value: String!
+  order: Int
+}
+
+# ---------------------------------------------------------------------------
+# Docs (Knowledge Base)
+# ---------------------------------------------------------------------------
+
+"""A Help Scout Docs knowledge-base site."""
+type DocsSite {
+  id: ID!
+  subDomain: String!
+  cname: String
+  status: String!
+  visibility: String!
+  title: String!
+  description: String
+  logoUrl: URL
+  favicon: URL
+  collections: [DocsCollection!]!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+"""A collection of articles within a Docs site."""
+type DocsCollection {
+  id: ID!
+  siteId: ID!
+  number: Int!
+  slug: String!
+  visibility: String!
+  order: Int!
+  name: String!
+  description: String
+  categories: [DocsCategory!]!
+  articles: [DocsArticle!]!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+"""A category grouping within a Docs collection."""
+type DocsCategory {
+  id: ID!
+  collectionId: ID!
+  number: Int!
+  slug: String!
+  visibility: String!
+  order: Int!
+  name: String!
+  articles: [DocsArticle!]!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+"""A help article in the Docs knowledge base."""
+type DocsArticle {
+  id: ID!
+  collectionId: ID!
+  number: Int!
+  slug: String!
+  status: String!
+  hasDraft: Boolean!
+  name: String!
+  text: String
+  preview: String
+  featured: Boolean!
+  responseRequired: Boolean!
+  keywords: [String!]
+  url: URL
+  docsUrl: URL
+  popularity: Float
+  viewCount: Int
+  author: DocsAuthor
+  publicUrl: URL
+  related: [DocsArticle!]!
+  categories: [DocsCategory!]!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  lastPublishedAt: DateTime
+}
+
+"""Author metadata for a Docs article."""
+type DocsAuthor {
+  id: ID!
+  firstName: String
+  lastName: String
+  fullName: String
+  email: String
+  photoUrl: URL
+}
+
+"""A search result entry from Docs search."""
+type DocsSearchResult {
+  id: ID!
+  number: Int!
+  collectionId: ID!
+  slug: String!
+  status: String!
+  name: String!
+  preview: String
+  url: URL
+  docsUrl: URL
+}
+
+# ---------------------------------------------------------------------------
+# Beacon
+# ---------------------------------------------------------------------------
+
+"""A Help Scout Beacon embed widget."""
+type Beacon {
+  id: ID!
+  name: String!
+  status: String!
+  color: String
+  mode: BeaconMode
+  docsEnabled: Boolean!
+  messagingEnabled: Boolean!
+  config: BeaconConfig
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+"""Full Beacon details."""
+type BeaconDetails {
+  id: ID!
+  name: String!
+  status: String!
+  color: String
+  mode: BeaconMode
+  docsEnabled: Boolean!
+  messagingEnabled: Boolean!
+  config: BeaconConfig
+  docsCollections: [DocsCollection!]!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+"""Configuration block for a Beacon widget."""
+type BeaconConfig {
+  docsEnabled: Boolean
+  messagingEnabled: Boolean
+  selfServiceEnabled: Boolean
+  color: String
+  iconStyle: String
+  position: String
+  zIndex: Int
+  hideContactForm: Boolean
+  enablePreviousMessages: Boolean
+  showPrefilledFields: Boolean
+  collectName: Boolean
+  collectEmail: Boolean
+  displaySubject: Boolean
+  askForChatRating: Boolean
+  chatEnabled: Boolean
+}
+
+# ---------------------------------------------------------------------------
+# Webhooks
+# ---------------------------------------------------------------------------
+
+"""A registered Help Scout webhook subscription."""
+type Webhook {
+  id: ID!
+  url: URL!
+  events: [WebhookEventType!]!
+  secret: String
+  status: String!
+  payloadVersion: String
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+"""A webhook event payload delivered by Help Scout."""
+type WebhookEvent {
+  id: ID!
+  type: WebhookEventType!
+  payload: JSON
+  webhookId: ID!
+  createdAt: DateTime!
+}
+
+"""HMAC secret used to verify webhook payloads."""
+type WebhookSecret {
+  webhookId: ID!
+  secret: String!
+}
+
+# ---------------------------------------------------------------------------
+# Auth
+# ---------------------------------------------------------------------------
+
+"""An API key credential for accessing the Help Scout API."""
+type APIKey {
+  id: ID!
+  name: String!
+  createdAt: DateTime!
+  lastUsedAt: DateTime
+}
+
+"""An OAuth 2.0 access token."""
+type Token {
+  accessToken: String!
+  tokenType: String!
+  expiresIn: Int!
+  scope: String
+}
+
+"""An OAuth 2.0 application registered with Help Scout."""
+type OAuthApp {
+  id: ID!
+  name: String!
+  clientId: String!
+  redirectUri: URL
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+# ---------------------------------------------------------------------------
+# Query
+# ---------------------------------------------------------------------------
+
+type Query {
+  """List all mailboxes accessible by the authenticated user."""
+  mailboxes(page: Int, size: Int): [Mailbox!]!
+
+  """Get details for a specific mailbox."""
+  mailbox(id: ID!): MailboxDetails
+
+  """List folders in a mailbox."""
+  folders(mailboxId: ID!): [Folder!]!
+
+  """List conversations with optional filters."""
+  conversations(
+    mailboxId: ID
+    status: ConversationStatus
+    assignedTo: ID
+    folderId: ID
+    tag: String
+    customerId: ID
+    query: String
+    page: Int
+    size: Int
+  ): ConversationConnection!
+
+  """Get a single conversation by ID."""
+  conversation(id: ID!): ConversationDetails
+
+  """List threads for a conversation."""
+  threads(conversationId: ID!): [Thread!]!
+
+  """List customers."""
+  customers(
+    mailboxId: ID
+    query: String
+    page: Int
+    size: Int
+  ): CustomerConnection!
+
+  """Get a single customer by ID."""
+  customer(id: ID!): CustomerDetails
+
+  """List all tags."""
+  tags: [TagDetails!]!
+
+  """List users (agents)."""
+  users(page: Int, size: Int): UserConnection!
+
+  """Get a single user by ID."""
+  user(id: ID!): UserDetails
+
+  """List teams."""
+  teams(page: Int, size: Int): [Team!]!
+
+  """Get a single team by ID."""
+  team(id: ID!): TeamDetails
+
+  """List automation workflows for a mailbox."""
+  workflows(mailboxId: ID!): [WorkflowDetails!]!
+
+  """Get saved / reply templates for a mailbox."""
+  replyTemplates(mailboxId: ID!): [ReplyTemplate!]!
+
+  """List saved searches."""
+  savedSearches: [SavedSearch!]!
+
+  """List custom properties defined at account level."""
+  customProperties: [CustomProperty!]!
+
+  """Get a conversation report."""
+  conversationReport(
+    type: ReportType!
+    startDate: DateTime!
+    endDate: DateTime!
+    mailboxIds: [ID!]
+    tags: [String!]
+    types: [ConversationType!]
+  ): ConversationReport
+
+  """Get a happiness / CSAT report."""
+  happinessReport(
+    startDate: DateTime!
+    endDate: DateTime!
+    mailboxIds: [ID!]
+  ): HappinessReport
+
+  """Get a productivity report."""
+  productivityReport(
+    startDate: DateTime!
+    endDate: DateTime!
+    mailboxIds: [ID!]
+  ): ProductivityReport
+
+  """List Docs sites."""
+  docsSites: [DocsSite!]!
+
+  """Get a Docs site."""
+  docsSite(id: ID!): DocsSite
+
+  """List collections in a Docs site."""
+  docsCollections(siteId: ID!): [DocsCollection!]!
+
+  """Get a Docs collection."""
+  docsCollection(id: ID!): DocsCollection
+
+  """List categories in a Docs collection."""
+  docsCategories(collectionId: ID!): [DocsCategory!]!
+
+  """List articles, optionally filtered."""
+  docsArticles(
+    collectionId: ID
+    categoryId: ID
+    status: String
+    page: Int
+    size: Int
+  ): [DocsArticle!]!
+
+  """Get a Docs article."""
+  docsArticle(id: ID!): DocsArticle
+
+  """Search Docs articles."""
+  docsSearch(
+    query: String!
+    siteId: ID
+    collectionId: ID
+    page: Int
+    size: Int
+  ): [DocsSearchResult!]!
+
+  """List Beacons."""
+  beacons: [Beacon!]!
+
+  """Get a Beacon."""
+  beacon(id: ID!): BeaconDetails
+
+  """List registered webhooks."""
+  webhooks: [Webhook!]!
+
+  """Get a single webhook."""
+  webhook(id: ID!): Webhook
+
+  """List ratings for a date range."""
+  ratings(
+    startDate: DateTime!
+    endDate: DateTime!
+    mailboxIds: [ID!]
+    rating: RatingStar
+    page: Int
+    size: Int
+  ): [Rating!]!
+}
+
+# ---------------------------------------------------------------------------
+# Mutation
+# ---------------------------------------------------------------------------
+
+type Mutation {
+  """Create a new conversation."""
+  createConversation(input: CreateConversationInput!): ConversationDetails!
+
+  """Update status, assignee, subject, or tags on a conversation."""
+  updateConversation(id: ID!, input: UpdateConversationInput!): ConversationDetails!
+
+  """Delete a conversation."""
+  deleteConversation(id: ID!): Boolean!
+
+  """Add a thread (reply, note, phone, chat) to a conversation."""
+  createThread(conversationId: ID!, input: CreateThreadInput!): Thread!
+
+  """Update custom field values on a conversation."""
+  updateConversationCustomFields(
+    conversationId: ID!
+    fields: [ConversationCustomFieldInput!]!
+  ): [ConversationCustomField!]!
+
+  """Create a new customer."""
+  createCustomer(input: CreateCustomerInput!): CustomerDetails!
+
+  """Update a customer."""
+  updateCustomer(id: ID!, input: UpdateCustomerInput!): CustomerDetails!
+
+  """Add an email to a customer."""
+  addCustomerEmail(customerId: ID!, email: String!, type: String): CustomerEmail!
+
+  """Create a new tag."""
+  createTag(name: String!, color: String): TagDetails!
+
+  """Update a tag."""
+  updateTag(id: ID!, name: String, color: String): TagDetails!
+
+  """Delete a tag."""
+  deleteTag(id: ID!): Boolean!
+
+  """Trigger a workflow against a conversation."""
+  runWorkflow(workflowId: ID!, conversationId: ID!): Boolean!
+
+  """Create a reply template."""
+  createReplyTemplate(input: CreateReplyTemplateInput!): ReplyTemplate!
+
+  """Update a reply template."""
+  updateReplyTemplate(id: ID!, input: UpdateReplyTemplateInput!): ReplyTemplate!
+
+  """Delete a reply template."""
+  deleteReplyTemplate(id: ID!): Boolean!
+
+  """Create a Docs article."""
+  createDocsArticle(input: CreateDocsArticleInput!): DocsArticle!
+
+  """Update a Docs article."""
+  updateDocsArticle(id: ID!, input: UpdateDocsArticleInput!): DocsArticle!
+
+  """Delete a Docs article."""
+  deleteDocsArticle(id: ID!): Boolean!
+
+  """Create a Docs collection."""
+  createDocsCollection(siteId: ID!, name: String!, description: String): DocsCollection!
+
+  """Create a Docs category."""
+  createDocsCategory(collectionId: ID!, name: String!): DocsCategory!
+
+  """Register a webhook."""
+  createWebhook(url: URL!, events: [WebhookEventType!]!, secret: String): Webhook!
+
+  """Update a webhook."""
+  updateWebhook(id: ID!, url: URL, events: [WebhookEventType!], secret: String): Webhook!
+
+  """Delete a webhook."""
+  deleteWebhook(id: ID!): Boolean!
+
+  """Upload an attachment and return the result."""
+  uploadAttachment(
+    conversationId: ID!
+    threadId: ID!
+    filename: String!
+    mimeType: String!
+    data: String!
+  ): Attachment!
+
+  """Delete an attachment."""
+  deleteAttachment(id: ID!): Boolean!
+}
+
+# ---------------------------------------------------------------------------
+# Input Types
+# ---------------------------------------------------------------------------
+
+input CreateConversationInput {
+  subject: String!
+  mailboxId: ID!
+  type: ConversationType!
+  status: ConversationStatus
+  assignTo: ID
+  tags: [String!]
+  customFields: [ConversationCustomFieldInput!]
+  customer: CustomerRefInput!
+  threads: [CreateThreadInput!]
+}
+
+input UpdateConversationInput {
+  subject: String
+  status: ConversationStatus
+  assignTo: ID
+  mailboxId: ID
+  tags: [String!]
+  snoozedUntil: DateTime
+}
+
+input CreateThreadInput {
+  type: ThreadType!
+  body: String!
+  to: [String!]
+  cc: [String!]
+  bcc: [String!]
+  attachments: [AttachmentInput!]
+  savedReplyId: ID
+}
+
+input ConversationCustomFieldInput {
+  fieldId: ID!
+  value: String
+}
+
+input CreateCustomerInput {
+  firstName: String
+  lastName: String
+  email: String
+  phone: String
+  organization: String
+  jobTitle: String
+  background: String
+  location: String
+}
+
+input UpdateCustomerInput {
+  firstName: String
+  lastName: String
+  organization: String
+  jobTitle: String
+  background: String
+  location: String
+  timeZone: String
+}
+
+input CustomerRefInput {
+  id: ID
+  email: String
+}
+
+input AttachmentInput {
+  filename: String!
+  mimeType: String!
+  data: String!
+}
+
+input CreateReplyTemplateInput {
+  mailboxId: ID!
+  name: String!
+  subject: String
+  body: String!
+}
+
+input UpdateReplyTemplateInput {
+  name: String
+  subject: String
+  body: String
+}
+
+input CreateDocsArticleInput {
+  collectionId: ID!
+  name: String!
+  text: String!
+  status: String
+  featured: Boolean
+  keywords: [String!]
+  categories: [ID!]
+}
+
+input UpdateDocsArticleInput {
+  name: String
+  text: String
+  status: String
+  featured: Boolean
+  keywords: [String!]
+  categories: [ID!]
+}

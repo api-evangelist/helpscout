@@ -2,9 +2,10 @@ aid: helpscout
 url: https://raw.githubusercontent.com/api-evangelist/helpscout/refs/heads/main/apis.yml
 name: Help Scout
 kind: company
-description: Help Scout is an email-first help desk platform with shared inboxes, live chat, knowledge bases, and a customer
-  portal. The Help Scout APIs expose conversations, customers, inboxes, users, workflows, ratings, reports, Docs (knowledge
-  base), Beacon (in-app messaging), and webhooks.
+description: Help Scout is an email-first help desk platform with shared inboxes,
+  live chat, knowledge bases, and a customer portal. The Help Scout APIs expose conversations,
+  customers, inboxes, users, workflows, ratings, reports, Docs (knowledge base), Beacon
+  (in-app messaging), and webhooks.
 image: https://kinlane-productions.s3.amazonaws.com/apis-json/apis-json-logo.jpg
 tags:
 - Customer Support
@@ -30,26 +31,11 @@ apis:
     type: APIReference
   - url: openapi/helpscout-openapi.yml
     type: OpenAPI
-  - type: NaftikoCapability
-    url: capabilities/helpscout-conversations.yaml
-  - type: NaftikoCapability
-    url: capabilities/helpscout-customers.yaml
-  - type: NaftikoCapability
-    url: capabilities/helpscout-mailboxes.yaml
-  - type: NaftikoCapability
-    url: capabilities/helpscout-tags.yaml
-  - type: NaftikoCapability
-    url: capabilities/helpscout-teams.yaml
-  - type: NaftikoCapability
-    url: capabilities/helpscout-threads.yaml
-  - type: NaftikoCapability
-    url: capabilities/helpscout-users.yaml
-  - type: NaftikoCapability
-    url: capabilities/helpscout-webhooks.yaml
-  - type: NaftikoCapability
-    url: capabilities/helpscout-workflows.yaml
-  description: Create, retrieve, list, update, and delete conversations including threads, attachments, custom fields, tags,
-    and snooze states. Core Mailbox API resource for ticket-style customer interactions.
+  - url: graphql/helpscout-graphql.md
+    type: GraphQL
+  description: Create, retrieve, list, update, and delete conversations including
+    threads, attachments, custom fields, tags, and snooze states. Core Mailbox API
+    resource for ticket-style customer interactions.
 - aid: helpscout:helpscout-threads-api
   name: Help Scout Threads API
   tags:
@@ -58,8 +44,8 @@ apis:
   properties:
   - url: https://developer.helpscout.com/mailbox-api/endpoints/conversations/threads/
     type: Documentation
-  description: Append customer replies, agent replies, internal notes, phone, chat, and forwards to an existing conversation
-    as new threads.
+  description: Append customer replies, agent replies, internal notes, phone, chat,
+    and forwards to an existing conversation as new threads.
 - aid: helpscout:helpscout-customers-api
   name: Help Scout Customers API
   tags:
@@ -68,8 +54,8 @@ apis:
   properties:
   - url: https://developer.helpscout.com/mailbox-api/endpoints/customers/list/
     type: Documentation
-  description: Manage customer profiles including addresses, emails, phone numbers, chat handles, social profiles, websites,
-    and properties.
+  description: Manage customer profiles including addresses, emails, phone numbers,
+    chat handles, social profiles, websites, and properties.
 - aid: helpscout:helpscout-mailboxes-api
   name: Help Scout Mailboxes API
   tags:
@@ -78,7 +64,8 @@ apis:
   properties:
   - url: https://developer.helpscout.com/mailbox-api/endpoints/mailboxes/list/
     type: Documentation
-  description: Read mailbox / inbox configuration including routing settings, saved replies, custom fields, and folders.
+  description: Read mailbox / inbox configuration including routing settings, saved
+    replies, custom fields, and folders.
 - aid: helpscout:helpscout-users-api
   name: Help Scout Users API
   tags:
@@ -87,7 +74,8 @@ apis:
   properties:
   - url: https://developer.helpscout.com/mailbox-api/endpoints/users/list/
     type: Documentation
-  description: Retrieve Help Scout user accounts (agents) including roles, permissions, and online/offline status.
+  description: Retrieve Help Scout user accounts (agents) including roles, permissions,
+    and online/offline status.
 - aid: helpscout:helpscout-teams-api
   name: Help Scout Teams API
   tags:
@@ -95,7 +83,8 @@ apis:
   properties:
   - url: https://developer.helpscout.com/mailbox-api/endpoints/teams/list/
     type: Documentation
-  description: Manage teams that group users for routing and assignment within shared inboxes.
+  description: Manage teams that group users for routing and assignment within shared
+    inboxes.
 - aid: helpscout:helpscout-tags-api
   name: Help Scout Tags API
   tags:
@@ -104,7 +93,8 @@ apis:
   properties:
   - url: https://developer.helpscout.com/mailbox-api/endpoints/tags/list/
     type: Documentation
-  description: List, create, and apply tags to conversations for categorization, automation, and reporting.
+  description: List, create, and apply tags to conversations for categorization, automation,
+    and reporting.
 - aid: helpscout:helpscout-workflows-api
   name: Help Scout Workflows API
   tags:
@@ -122,7 +112,8 @@ apis:
   properties:
   - url: https://developer.helpscout.com/mailbox-api/endpoints/conversations/custom_fields/
     type: Documentation
-  description: Read custom field definitions on inboxes and read / update custom field values on conversations.
+  description: Read custom field definitions on inboxes and read / update custom field
+    values on conversations.
 - aid: helpscout:helpscout-attachments-api
   name: Help Scout Attachments API
   tags:
@@ -141,7 +132,8 @@ apis:
   properties:
   - url: https://developer.helpscout.com/mailbox-api/endpoints/reports/happiness/
     type: Documentation
-  description: Read customer satisfaction ratings (great / okay / not good) attached to conversation threads.
+  description: Read customer satisfaction ratings (great / okay / not good) attached
+    to conversation threads.
 - aid: helpscout:helpscout-reports-api
   name: Help Scout Reports API
   tags:
@@ -150,8 +142,8 @@ apis:
   properties:
   - url: https://developer.helpscout.com/mailbox-api/endpoints/reports/
     type: Documentation
-  description: Aggregated reports across company performance, conversations, happiness ratings, productivity, and user/team
-    statistics.
+  description: Aggregated reports across company performance, conversations, happiness
+    ratings, productivity, and user/team statistics.
 - aid: helpscout:helpscout-webhooks-api
   name: Help Scout Webhooks API
   tags:
@@ -162,8 +154,9 @@ apis:
     type: Documentation
   - url: asyncapi/helpscout-webhooks-asyncapi.yml
     type: AsyncAPI
-  description: Subscribe to Help Scout events (convo.created, convo.assigned, convo.tag, customer.created, rating.received)
-    for downstream automation. Webhooks include HMAC signatures for verification.
+  description: Subscribe to Help Scout events (convo.created, convo.assigned, convo.tag,
+    customer.created, rating.received) for downstream automation. Webhooks include
+    HMAC signatures for verification.
 - aid: helpscout:helpscout-docs-api
   name: Help Scout Docs API
   tags:
@@ -173,7 +166,8 @@ apis:
   properties:
   - url: https://developer.helpscout.com/docs-api/
     type: Documentation
-  description: Manage knowledge-base sites, collections, categories, articles, and search/related content for Help Scout Docs.
+  description: Manage knowledge-base sites, collections, categories, articles, and
+    search/related content for Help Scout Docs.
 - aid: helpscout:helpscout-beacon-api
   name: Help Scout Beacon API
   tags:
@@ -183,8 +177,8 @@ apis:
   properties:
   - url: https://developer.helpscout.com/beacon-2/
     type: Documentation
-  description: Embed Beacon (live chat, help docs, customer portal) into web and mobile applications and pre-fill or update
-    Beacon context via the Beacon JS API.
+  description: Embed Beacon (live chat, help docs, customer portal) into web and mobile
+    applications and pre-fill or update Beacon context via the Beacon JS API.
 - aid: helpscout:helpscout-chat-api
   name: Help Scout Chat API
   tags:
@@ -193,7 +187,8 @@ apis:
   properties:
   - url: https://developer.helpscout.com/
     type: Documentation
-  description: Read and write live chat conversations and messages alongside the email Mailbox API for unified ticketing.
+  description: Read and write live chat conversations and messages alongside the email
+    Mailbox API for unified ticketing.
 - aid: helpscout:helpscout-apps-api
   name: Help Scout Apps API
   tags:
@@ -203,7 +198,8 @@ apis:
   properties:
   - url: https://developer.helpscout.com/apps/
     type: Documentation
-  description: Build sidebar applications that render custom content within the Help Scout Inbox UI for partner integrations.
+  description: Build sidebar applications that render custom content within the Help
+    Scout Inbox UI for partner integrations.
 common:
 - type: LinkedIn
   url: https://www.linkedin.com/company/help-scout
