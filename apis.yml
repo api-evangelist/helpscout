@@ -6,7 +6,7 @@ description: Help Scout is an email-first help desk platform with shared inboxes
   live chat, knowledge bases, and a customer portal. The Help Scout APIs expose conversations,
   customers, inboxes, users, workflows, ratings, reports, Docs (knowledge base), Beacon
   (in-app messaging), and webhooks.
-image: https://kinlane-productions.s3.amazonaws.com/apis-json/apis-json-logo.jpg
+image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
 tags:
 - Customer Support
 - Help Desk
