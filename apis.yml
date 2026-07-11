@@ -201,6 +201,12 @@ apis:
   description: Build sidebar applications that render custom content within the Help
     Scout Inbox UI for partner integrations.
 common:
+- type: TrustCenter
+  url: security/helpscout-trust-center.yml
+- type: DomainSecurity
+  url: security/helpscout-domain-security.yml
+- type: Authentication
+  url: authentication/helpscout-authentication.yml
 - type: OAuthScopes
   url: scopes/helpscout-scopes.yml
 - type: LinkedIn
