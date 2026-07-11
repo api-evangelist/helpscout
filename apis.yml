@@ -201,6 +201,8 @@ apis:
   description: Build sidebar applications that render custom content within the Help
     Scout Inbox UI for partner integrations.
 common:
+- type: OAuthScopes
+  url: scopes/helpscout-scopes.yml
 - type: LinkedIn
   url: https://www.linkedin.com/company/help-scout
 - type: Website
