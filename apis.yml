@@ -201,6 +201,8 @@ apis:
   description: Build sidebar applications that render custom content within the Help
     Scout Inbox UI for partner integrations.
 common:
+- type: AgenticAccess
+  url: agentic-access/helpscout-agentic-access.yml
 - type: TrustCenter
   url: security/helpscout-trust-center.yml
 - type: DomainSecurity
