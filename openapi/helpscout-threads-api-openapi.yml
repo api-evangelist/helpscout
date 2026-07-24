@@ -1,0 +1,57 @@
+openapi: 3.1.0
+info:
+  title: Help Scout Mailbox Conversations Threads API
+  description: Minimal OpenAPI description for Help Scout's Mailbox API v2 covering core resources for conversations, threads, customers, mailboxes, users, teams, tags, workflows, and webhooks. Generated from public documentation; verify before production use.
+  version: '2.0'
+  contact:
+    name: Help Scout Developer Documentation
+    url: https://developer.helpscout.com/mailbox-api/
+  x-generated-from: https://developer.helpscout.com/mailbox-api/
+  x-generated-by: claude-crawl-2026-05-08
+servers:
+- url: https://api.helpscout.net/v2
+  description: Help Scout Mailbox API production
+security:
+- oauth2: []
+tags:
+- name: Threads
+paths:
+  /conversations/{id}/threads:
+    post:
+      operationId: createThread
+      summary: Create thread
+      tags:
+      - Threads
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Thread'
+      responses:
+        '201':
+          description: Created
+components:
+  schemas:
+    Thread:
+      type: object
+      properties:
+        type:
+          type: string
+        text:
+          type: string
+        customer:
+          type: object
+  securitySchemes:
+    oauth2:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.helpscout.net/v2/oauth2/token
+          scopes: {}

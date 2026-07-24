@@ -1,0 +1,106 @@
+openapi: 3.1.0
+info:
+  title: Help Scout Mailbox Conversations Customers API
+  description: Minimal OpenAPI description for Help Scout's Mailbox API v2 covering core resources for conversations, threads, customers, mailboxes, users, teams, tags, workflows, and webhooks. Generated from public documentation; verify before production use.
+  version: '2.0'
+  contact:
+    name: Help Scout Developer Documentation
+    url: https://developer.helpscout.com/mailbox-api/
+  x-generated-from: https://developer.helpscout.com/mailbox-api/
+  x-generated-by: claude-crawl-2026-05-08
+servers:
+- url: https://api.helpscout.net/v2
+  description: Help Scout Mailbox API production
+security:
+- oauth2: []
+tags:
+- name: Customers
+paths:
+  /customers:
+    get:
+      operationId: listCustomers
+      summary: List customers
+      tags:
+      - Customers
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+    post:
+      operationId: createCustomer
+      summary: Create customer
+      tags:
+      - Customers
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Customer'
+      responses:
+        '201':
+          description: Created
+  /customers/{id}:
+    get:
+      operationId: getCustomer
+      summary: Get customer
+      tags:
+      - Customers
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+    patch:
+      operationId: updateCustomer
+      summary: Update customer
+      tags:
+      - Customers
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '204':
+          description: Updated
+components:
+  schemas:
+    Customer:
+      type: object
+      properties:
+        id:
+          type: integer
+        firstName:
+          type: string
+        lastName:
+          type: string
+        emails:
+          type: array
+          items:
+            type: object
+  securitySchemes:
+    oauth2:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.helpscout.net/v2/oauth2/token
+          scopes: {}

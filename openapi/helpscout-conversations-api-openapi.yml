@@ -1,0 +1,129 @@
+openapi: 3.1.0
+info:
+  title: Help Scout Mailbox Conversations API
+  description: Minimal OpenAPI description for Help Scout's Mailbox API v2 covering core resources for conversations, threads, customers, mailboxes, users, teams, tags, workflows, and webhooks. Generated from public documentation; verify before production use.
+  version: '2.0'
+  contact:
+    name: Help Scout Developer Documentation
+    url: https://developer.helpscout.com/mailbox-api/
+  x-generated-from: https://developer.helpscout.com/mailbox-api/
+  x-generated-by: claude-crawl-2026-05-08
+servers:
+- url: https://api.helpscout.net/v2
+  description: Help Scout Mailbox API production
+security:
+- oauth2: []
+tags:
+- name: Conversations
+paths:
+  /conversations:
+    get:
+      operationId: listConversations
+      summary: List conversations
+      tags:
+      - Conversations
+      parameters:
+      - name: page
+        in: query
+        schema:
+          type: integer
+      - name: status
+        in: query
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+    post:
+      operationId: createConversation
+      summary: Create conversation
+      tags:
+      - Conversations
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Conversation'
+      responses:
+        '201':
+          description: Created
+  /conversations/{id}:
+    get:
+      operationId: getConversation
+      summary: Get conversation
+      tags:
+      - Conversations
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Conversation'
+    patch:
+      operationId: updateConversation
+      summary: Update conversation
+      tags:
+      - Conversations
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '204':
+          description: Updated
+    delete:
+      operationId: deleteConversation
+      summary: Delete conversation
+      tags:
+      - Conversations
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Deleted
+components:
+  schemas:
+    Conversation:
+      type: object
+      properties:
+        id:
+          type: integer
+        subject:
+          type: string
+        status:
+          type: string
+        type:
+          type: string
+        mailboxId:
+          type: integer
+  securitySchemes:
+    oauth2:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.helpscout.net/v2/oauth2/token
+          scopes: {}
