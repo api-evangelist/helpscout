@@ -1,0 +1,30 @@
+{
+  "provider": "helpscout",
+  "sources": [
+    "helpscout-conversations-api-openapi.yml",
+    "helpscout-customers-api-openapi.yml",
+    "helpscout-mailboxes-api-openapi.yml",
+    "helpscout-tags-api-openapi.yml",
+    "helpscout-teams-api-openapi.yml",
+    "helpscout-threads-api-openapi.yml",
+    "helpscout-users-api-openapi.yml",
+    "helpscout-webhooks-api-openapi.yml",
+    "helpscout-workflows-api-openapi.yml"
+  ],
+  "outputs": [
+    "helpscout-conversations-api-openapi.yml",
+    "helpscout-customers-api-openapi.yml",
+    "helpscout-mailboxes-api-openapi.yml",
+    "helpscout-tags-api-openapi.yml",
+    "helpscout-teams-api-openapi.yml",
+    "helpscout-threads-api-openapi.yml",
+    "helpscout-users-api-openapi.yml",
+    "helpscout-webhooks-api-openapi.yml",
+    "helpscout-workflows-api-openapi.yml"
+  ],
+  "archived": [],
+  "errors": [],
+  "warnings": [],
+  "notes": [],
+  "skipped": []
+}

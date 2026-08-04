@@ -1,0 +1,401 @@
+{
+  "info": {
+    "_postman_id": "8baae541-02ae-4aa0-a769-9d5e5cbcbb2e",
+    "name": "Help Scout Mailbox Conversations Customers API",
+    "description": "Minimal OpenAPI description for Help Scout's Mailbox API v2 covering core resources for conversations, threads, customers, mailboxes, users, teams, tags, workflows, and webhooks. Generated from public documentation; verify before production use.\n\nContact Support:\n Name: Help Scout Developer Documentation",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "createdAt": "2026-07-28T01:55:26.000Z",
+    "updatedAt": "2026-07-28T01:55:26.000Z",
+    "lastUpdatedBy": "35240",
+    "uid": "35240-8baae541-02ae-4aa0-a769-9d5e5cbcbb2e"
+  },
+  "item": [
+    {
+      "name": "customers",
+      "item": [
+        {
+          "name": "{id}",
+          "item": [
+            {
+              "name": "Get customer",
+              "id": "87d8e52d-1fe5-41c6-8e36-038882715ca1",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/customers/:id",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "customers",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "id": "86040134-9331-4a34-83f6-99e396a0c3f1",
+                      "key": "id",
+                      "value": "<integer>",
+                      "description": "(Required) "
+                    }
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "id": "ccb64f8f-c22e-4148-9203-6b7de375a578",
+                  "name": "Successful response",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      },
+                      {
+                        "description": "Added as a part of security scheme: oauth2",
+                        "key": "Authorization",
+                        "value": "<token>"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/customers/:id",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "customers",
+                        ":id"
+                      ],
+                      "variable": [
+                        {
+                          "key": "id"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "responseTime": null,
+                  "body": "{\n  \"id\": \"<integer>\",\n  \"firstName\": \"<string>\",\n  \"lastName\": \"<string>\"\n}",
+                  "createdAt": "2026-07-28T01:55:27.000Z",
+                  "updatedAt": "2026-07-28T01:55:27.000Z",
+                  "uid": "35240-ccb64f8f-c22e-4148-9203-6b7de375a578"
+                }
+              ],
+              "createdAt": "2026-07-28T01:55:27.000Z",
+              "updatedAt": "2026-07-28T01:55:27.000Z",
+              "uid": "35240-87d8e52d-1fe5-41c6-8e36-038882715ca1"
+            },
+            {
+              "name": "Update customer",
+              "id": "9b5aef53-91e3-49c4-88e4-23d56aabbf67",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/customers/:id",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "customers",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "id": "4f354756-0f25-463a-aff7-2ee3683ad3fe",
+                      "key": "id",
+                      "value": "<integer>",
+                      "description": "(Required) "
+                    }
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "id": "1545cb3d-d6ca-4cef-a067-fa89aaf8a3e0",
+                  "name": "Updated",
+                  "originalRequest": {
+                    "method": "PATCH",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      },
+                      {
+                        "description": "Added as a part of security scheme: oauth2",
+                        "key": "Authorization",
+                        "value": "<token>"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{}",
+                      "options": {
+                        "raw": {
+                          "headerFamily": "json",
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseUrl}}/customers/:id",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "customers",
+                        ":id"
+                      ],
+                      "variable": [
+                        {
+                          "key": "id"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "No Content",
+                  "code": 204,
+                  "_postman_previewlanguage": "text",
+                  "header": [],
+                  "cookie": [],
+                  "responseTime": null,
+                  "body": null,
+                  "createdAt": "2026-07-28T01:55:27.000Z",
+                  "updatedAt": "2026-07-28T01:55:27.000Z",
+                  "uid": "35240-1545cb3d-d6ca-4cef-a067-fa89aaf8a3e0"
+                }
+              ],
+              "createdAt": "2026-07-28T01:55:27.000Z",
+              "updatedAt": "2026-07-28T01:55:27.000Z",
+              "uid": "35240-9b5aef53-91e3-49c4-88e4-23d56aabbf67"
+            }
+          ],
+          "id": "262676bd-72da-458b-ace0-14cd1fd4e861",
+          "createdAt": "2026-07-28T01:55:27.000Z",
+          "updatedAt": "2026-07-28T01:55:27.000Z",
+          "uid": "35240-262676bd-72da-458b-ace0-14cd1fd4e861"
+        },
+        {
+          "name": "List customers",
+          "id": "9599839e-946c-42fa-9203-32f63972f694",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/customers",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "customers"
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "e5953f94-6bbb-460c-966e-0df2d05e5f68",
+              "name": "Successful response",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "description": "Added as a part of security scheme: oauth2",
+                    "key": "Authorization",
+                    "value": "<token>"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/customers",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "customers"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "responseTime": null,
+              "body": "{}",
+              "createdAt": "2026-07-28T01:55:27.000Z",
+              "updatedAt": "2026-07-28T01:55:27.000Z",
+              "uid": "35240-e5953f94-6bbb-460c-966e-0df2d05e5f68"
+            }
+          ],
+          "createdAt": "2026-07-28T01:55:27.000Z",
+          "updatedAt": "2026-07-28T01:55:27.000Z",
+          "uid": "35240-9599839e-946c-42fa-9203-32f63972f694"
+        },
+        {
+          "name": "Create customer",
+          "id": "8c325a68-f37f-482d-9a31-199f19480cb0",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"<integer>\",\n  \"firstName\": \"<string>\",\n  \"lastName\": \"<string>\"\n}",
+              "options": {
+                "raw": {
+                  "headerFamily": "json",
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/customers",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "customers"
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "2260a198-8805-4534-8387-b5d385473cc4",
+              "name": "Created",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "description": "Added as a part of security scheme: oauth2",
+                    "key": "Authorization",
+                    "value": "<token>"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"id\": \"<integer>\",\n  \"firstName\": \"<string>\",\n  \"lastName\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/customers",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "customers"
+                  ]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "responseTime": null,
+              "body": null,
+              "createdAt": "2026-07-28T01:55:27.000Z",
+              "updatedAt": "2026-07-28T01:55:27.000Z",
+              "uid": "35240-2260a198-8805-4534-8387-b5d385473cc4"
+            }
+          ],
+          "createdAt": "2026-07-28T01:55:27.000Z",
+          "updatedAt": "2026-07-28T01:55:27.000Z",
+          "uid": "35240-8c325a68-f37f-482d-9a31-199f19480cb0"
+        }
+      ],
+      "id": "b0d67077-a553-4d0a-86be-72b4245f8bfd",
+      "createdAt": "2026-07-28T01:55:27.000Z",
+      "updatedAt": "2026-07-28T01:55:27.000Z",
+      "uid": "35240-b0d67077-a553-4d0a-86be-72b4245f8bfd"
+    }
+  ],
+  "auth": {
+    "type": "oauth2",
+    "oauth2": [
+      {
+        "key": "accessTokenUrl",
+        "value": "https://api.helpscout.net/v2/oauth2/token",
+        "type": "string"
+      },
+      {
+        "key": "grant_type",
+        "value": "client_credentials",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://api.helpscout.net/v2"
+    }
+  ]
+}

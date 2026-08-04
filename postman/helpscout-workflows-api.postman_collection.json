@@ -1,0 +1,116 @@
+{
+  "info": {
+    "_postman_id": "04b88faf-1c31-4b53-8872-79fba7d382ae",
+    "name": "Help Scout Mailbox Conversations Workflows API",
+    "description": "Minimal OpenAPI description for Help Scout's Mailbox API v2 covering core resources for conversations, threads, customers, mailboxes, users, teams, tags, workflows, and webhooks. Generated from public documentation; verify before production use.\n\nContact Support:\n Name: Help Scout Developer Documentation",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "createdAt": "2026-07-28T01:55:32.000Z",
+    "updatedAt": "2026-07-28T01:55:32.000Z",
+    "lastUpdatedBy": "35240",
+    "uid": "35240-04b88faf-1c31-4b53-8872-79fba7d382ae"
+  },
+  "item": [
+    {
+      "name": "workflows",
+      "item": [
+        {
+          "name": "List workflows",
+          "id": "cf3923ce-467f-4495-926f-3c44af4ea0e9",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/workflows",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "workflows"
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "b6fb1a0e-fa56-43fb-9612-c3e9cb29caff",
+              "name": "Successful response",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "description": "Added as a part of security scheme: oauth2",
+                    "key": "Authorization",
+                    "value": "<token>"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/workflows",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "workflows"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "responseTime": null,
+              "body": "{}",
+              "createdAt": "2026-07-28T01:55:33.000Z",
+              "updatedAt": "2026-07-28T01:55:33.000Z",
+              "uid": "35240-b6fb1a0e-fa56-43fb-9612-c3e9cb29caff"
+            }
+          ],
+          "createdAt": "2026-07-28T01:55:33.000Z",
+          "updatedAt": "2026-07-28T01:55:33.000Z",
+          "uid": "35240-cf3923ce-467f-4495-926f-3c44af4ea0e9"
+        }
+      ],
+      "id": "72b439fd-09c3-4c06-829b-0f5a1156e80d",
+      "createdAt": "2026-07-28T01:55:33.000Z",
+      "updatedAt": "2026-07-28T01:55:33.000Z",
+      "uid": "35240-72b439fd-09c3-4c06-829b-0f5a1156e80d"
+    }
+  ],
+  "auth": {
+    "type": "oauth2",
+    "oauth2": [
+      {
+        "key": "accessTokenUrl",
+        "value": "https://api.helpscout.net/v2/oauth2/token",
+        "type": "string"
+      },
+      {
+        "key": "grant_type",
+        "value": "client_credentials",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://api.helpscout.net/v2"
+    }
+  ]
+}
