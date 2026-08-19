@@ -1,0 +1,1721 @@
+# Help Scout Developer APIs
+
+This file documents the public APIs available through Help Scout's developer platform for integration and automation purposes.
+
+## Inbox API 2.0 (Primary API)
+
+**Base URL:** https://api.helpscout.net/v2
+**Authentication:** OAuth 2.0 (Authorization Code & Client Credentials flows)
+**Rate Limits:** 200 requests/minute per account, 12 write requests per 5 seconds burst limit
+**Format:** HAL+JSON with embedded resources and pagination
+
+The primary REST API for managing Help Scout conversations, customers, and support operations.
+
+### Authentication Example
+
+**Client Credentials Flow:**
+```bash
+curl -X POST https://api.helpscout.net/v2/oauth2/token \
+    --data "grant_type=client_credentials" \
+    --data "client_id={application_id}" \
+    --data "client_secret={application_secret}"
+```
+
+**Response:**
+```json
+{
+    "token_type": "bearer",
+    "access_token": "369dbb08be58430086d2f8bd832bc1eb",
+    "expires_in": 172800
+}
+```
+
+### Conversations
+
+**GET /v2/conversations** - List conversations with advanced filtering
+List conversations with support for complex queries, custom field filtering, and sorting.
+
+Example with filtering:
+```bash
+curl -H "Authorization: Bearer {token}" \
+  "https://api.helpscout.net/v2/conversations?mailbox=123&status=active&query=(subject:\"rainbow\")"
+```
+
+Advanced query examples:
+- Subject search: `query=(subject:"rainbow")`
+- Tag search: `query=(tag:"urgent")`
+- Date range: `query=(modifiedAt:[2024-01-01T00:00:00Z TO *])`
+- Email search: `query=(email:"john@example.com")`
+- NOT operator: `query=(NOT email:"spam@domain.com")`
+- Custom fields: `customFieldsByIds=123:blue,234:99`
+
+Response:
+```json
+{
+  "_embedded": {
+    "conversations": [{
+      "id": 10,
+      "number": 12,
+      "threads": 2,
+      "type": "email",
+      "status": "active",
+      "subject": "Help with setup",
+      "mailboxId": 13,
+      "assignee": {
+        "id": 99,
+        "type": "user",
+        "first": "John",
+        "last": "Agent",
+        "email": "john@company.com"
+      },
+      "customFields": [{
+        "id": 8,
+        "name": "Account Type",
+        "value": "8518",
+        "text": "Premium"
+      }],
+      "snooze": {
+        "snoozedBy": 4,
+        "snoozedUntil": "2024-06-03T12:00:00Z",
+        "unsnoozeOnCustomerReply": true
+      },
+      "createdAt": "2024-01-15T09:30:00Z",
+      "modifiedAt": "2024-01-15T14:20:00Z"
+    }]
+  },
+  "page": {
+    "size": 25,
+    "totalElements": 156,
+    "totalPages": 7,
+    "number": 1
+  }
+}
+```
+
+**POST /v2/conversations** - Create new conversation
+Create a new conversation with customer, threads, tags and custom fields.
+
+Request:
+```json
+{
+  "subject": "Need help with billing",
+  "customer": {
+    "email": "customer@example.com",
+    "firstName": "Jane",
+    "lastName": "Smith"
+  },
+  "mailboxId": 85,
+  "type": "email",
+  "status": "active",
+  "threads": [{
+    "type": "customer",
+    "customer": {
+      "email": "customer@example.com"
+    },
+    "text": "I have a question about my recent bill. Can you help?"
+  }],
+  "tags": ["billing", "priority"],
+  "fields": [{
+    "id": 531,
+    "value": "premium"
+  }]
+}
+```
+
+Response:
+```json
+{
+  "id": 12345,
+  "number": 98765,
+  "subject": "Need help with billing",
+  "status": "active",
+  "createdAt": "2024-01-15T10:00:00Z",
+  "_links": {
+    "self": {
+      "href": "https://api.helpscout.net/v2/conversations/12345"
+    }
+  }
+}
+```
+
+**PATCH /v2/conversations/{id}** - Update conversation using JSON Patch
+Update conversation properties using JSON Patch operations.
+
+Request:
+```json
+[
+  {"op": "replace", "path": "/subject", "value": "Updated subject"},
+  {"op": "replace", "path": "/status", "value": "closed"},
+  {"op": "replace", "path": "/assignTo", "value": 123},
+  {"op": "move", "path": "/mailboxId", "value": 456}
+]
+```
+
+**GET /v2/conversations/{id}/threads** - List conversation threads
+Retrieve all threads (messages) in a conversation with attachments and ratings.
+
+Response:
+```json
+{
+  "_embedded": {
+    "threads": [{
+      "id": 1234,
+      "type": "customer",
+      "status": "active",
+      "state": "published",
+      "body": "Thank you for the quick response!",
+      "customer": {
+        "id": 29418,
+        "first": "Jane",
+        "last": "Smith",
+        "email": "jane@example.com"
+      },
+      "rating": {
+        "customerId": 1234,
+        "rating": "great",
+        "comments": "Very helpful!"
+      },
+      "createdAt": "2024-01-15T10:30:00Z",
+      "_embedded": {
+        "attachments": [{
+          "id": 1234,
+          "filename": "screenshot.jpg",
+          "mimeType": "image/jpeg",
+          "size": 20191,
+          "state": "valid"
+        }]
+      }
+    }]
+  }
+}
+```
+
+**POST /v2/conversations/{id}/reply** - Create reply thread
+Add a reply, note, or other thread type to a conversation.
+
+Request:
+```json
+{
+  "type": "reply",
+  "text": "I've checked your account and resolved the billing issue.",
+  "draft": false,
+  "status": "active",
+  "attachments": [{
+    "fileName": "invoice.pdf",
+    "mimeType": "application/pdf",
+    "data": "JVBERi0xLjQKJdP..."
+  }]
+}
+```
+
+### Customers
+
+**GET /v2/customers** - List customers with search
+Search and filter customers by various criteria.
+
+Example with search:
+```bash
+curl -H "Authorization: Bearer {token}" \
+  "https://api.helpscout.net/v2/customers?query=(email:\"jane@example.com\")"
+```
+
+**POST /v2/customers** - Create new customer
+Create a customer with contact information and properties.
+
+Request:
+```json
+{
+  "firstName": "Jane",
+  "lastName": "Smith",
+  "jobTitle": "Marketing Manager",
+  "organization": "Example Corp",
+  "emails": [{
+    "type": "work",
+    "value": "jane@example.com"
+  }],
+  "phones": [{
+    "type": "work",
+    "value": "+1-555-123-4567"
+  }],
+  "properties": [{
+    "slug": "account-type",
+    "value": "Premium"
+  }]
+}
+```
+
+Response:
+```json
+{
+  "id": 12345,
+  "firstName": "Jane",
+  "lastName": "Smith",
+  "emails": [{
+    "id": 67890,
+    "type": "work",
+    "value": "jane@example.com"
+  }],
+  "createdAt": "2024-01-15T09:00:00Z",
+  "_links": {
+    "self": {
+      "href": "https://api.helpscout.net/v2/customers/12345"
+    }
+  }
+}
+```
+
+### Customer Sub-Resources
+
+**POST /v2/customers/{id}/emails** - Add email address
+**POST /v2/customers/{id}/phones** - Add phone number
+**POST /v2/customers/{id}/social_profiles** - Add social profile
+**PUT /v2/customers/{id}/address** - Update address
+
+### Reports (Plus/Pro Plans)
+
+**GET /v2/reports/conversations** - Conversation volume and trends
+Get detailed conversation analytics with comparison periods.
+
+Parameters:
+- `start`, `end` - Date range (ISO 8601)
+- `previousStart`, `previousEnd` - Comparison period
+- `mailboxes`, `tags`, `types`, `folders` - Filters
+
+Example:
+```bash
+curl -H "Authorization: Bearer {token}" \
+  "https://api.helpscout.net/v2/reports/conversations?start=2024-01-01T00:00:00Z&end=2024-01-31T23:59:59Z&mailboxes=123"
+```
+
+Response:
+```json
+{
+  "busiestDay": {
+    "day": 3,
+    "hour": 14,
+    "count": 45
+  },
+  "current": {
+    "totalConversations": 1816,
+    "conversationsCreated": 1698,
+    "customers": 1302,
+    "conversationsPerDay": 60
+  },
+  "deltas": {
+    "newConversations": -14.07,
+    "totalConversations": -12.69
+  },
+  "tags": {
+    "top": [{
+      "id": 1,
+      "name": "urgent",
+      "count": 146,
+      "percent": 8.04
+    }]
+  },
+  "customFields": {
+    "fields": [{
+      "id": 8,
+      "name": "Account Type",
+      "values": [{
+        "name": "Premium",
+        "count": 142,
+        "percent": 55.12
+      }]
+    }]
+  }
+}
+```
+
+**GET /v2/reports/productivity** - Response time and resolution metrics
+Get detailed productivity metrics including response times and resolution data.
+
+Response:
+```json
+{
+  "current": {
+    "resolutionTime": 86400,
+    "responseTime": 3600,
+    "firstResponseTime": 1800,
+    "handleTime": 600,
+    "percentResolvedOnFirstReply": 45.5
+  },
+  "responseTime": {
+    "ranges": [{
+      "id": 10,
+      "label": "< 1 hour",
+      "count": 145,
+      "percent": 68.2
+    }]
+  }
+}
+```
+
+**GET /v2/reports/user** - Individual user performance
+Get performance metrics for a specific user or team member.
+
+Parameters: `user={id}` or `users={id1,id2}`
+
+Response:
+```json
+{
+  "user": {
+    "id": 123,
+    "name": "John Agent",
+    "totalCustomersHelped": 1250
+  },
+  "current": {
+    "resolved": 45,
+    "totalReplies": 156,
+    "responseTime": 2700,
+    "happinessScore": 92.5,
+    "repliesToResolve": 2.1
+  }
+}
+```
+
+### Inboxes (Mailboxes)
+
+**GET /v2/mailboxes** - List all inboxes
+Get all mailboxes/inboxes accessible to the authenticated user.
+
+Response:
+```json
+{
+  "_embedded": {
+    "mailboxes": [{
+      "id": 1,
+      "name": "General Support",
+      "slug": "83ebc5d87292a795",
+      "email": "support@company.com",
+      "createdAt": "2023-06-05T09:17:15Z"
+    }]
+  }
+}
+```
+
+**GET /v2/mailboxes/{id}/folders** - List inbox folders
+**GET /v2/mailboxes/{id}/fields** - List custom fields
+**GET /v2/mailboxes/{id}/saved_replies** - List saved replies
+
+### Webhooks
+
+**POST /v2/webhooks** - Create webhook subscription
+Create webhook to receive real-time notifications for Help Scout events.
+
+Request:
+```json
+{
+  "url": "https://yourapp.com/helpscout-webhook",
+  "events": [
+    "convo.assigned",
+    "convo.created", 
+    "convo.status",
+    "customer.created"
+  ],
+  "secret": "your-webhook-secret",
+  "payloadVersion": "V2",
+  "label": "Main App Webhook"
+}
+```
+
+Response:
+```json
+{
+  "id": 12345,
+  "url": "https://yourapp.com/helpscout-webhook",
+  "events": ["convo.assigned", "convo.created"],
+  "state": "enabled",
+  "createdAt": "2024-01-15T10:00:00Z"
+}
+```
+
+Available webhook events:
+- `convo.assigned`, `convo.created`, `convo.deleted`, `convo.merged`, `convo.moved`, `convo.status`
+- `convo.tags.added`, `convo.tags.removed`
+- `convo.customer.reply.created`, `convo.agent.reply.created`, `convo.note.created`
+- `customer.created`, `customer.updated`, `customer.deleted`
+- `satisfaction.ratings.received`
+- `beacon.chat.created`, `beacon.chat.customer.reply.created`
+
+### Users & Teams
+
+**GET /v2/users** - List all users
+**GET /v2/users/me** - Get current authenticated user
+**GET /v2/teams** - List teams
+**GET /v2/teams/{id}/members** - List team members
+
+### Workflows
+
+**POST /v2/workflows/{id}/run** - Execute manual workflow
+Run a manual workflow on specific conversations.
+
+Request:
+```json
+{
+  "conversationIds": [123, 456, 789]
+}
+```
+
+### Tags & Properties
+
+**GET /v2/tags** - List all tags
+**GET /v2/customer-properties** - List customer properties
+**POST /v2/customer-properties** - Create custom property
+
+### Error Handling
+
+All API errors follow a consistent format:
+```json
+{
+  "logRef": "64bb72b4-0a92-11e8-ba89-0ed5f89f718b",
+  "message": "Validation failed",
+  "_embedded": {
+    "errors": [{
+      "path": "subject",
+      "message": "may not be empty",
+      "source": "JSON"
+    }]
+  }
+}
+```
+
+## Docs API
+
+**Base URL:** https://docsapi.helpscout.net/v1
+**Authentication:** API Key via HTTP Basic Auth (API key as username, dummy password)
+**Rate Limits:** 2000-4000 requests per 10 minutes (varies by number of sites)
+**Format:** JSON only with envelope structure
+**Pagination:** Maximum 50 records per page (customizable up to 100)
+
+API for managing Help Scout Docs knowledge base content including articles, collections, categories, and sites.
+
+### Authentication Example
+
+```bash
+curl --user {api_key}:X https://docsapi.helpscout.net/v1/collections
+```
+
+### Articles
+
+**GET /v1/articles/{id}** - Get single article
+Retrieve a specific article by ID or number. Supports draft versions.
+
+Parameters:
+- `draft=true` - Get draft version if available
+
+Response:
+```json
+{
+  "article": {
+    "id": "5214c77c45667acd25394b51",
+    "number": 123,
+    "collectionId": "5214c77c45667acd25394b50",
+    "status": "published",
+    "hasDraft": false,
+    "name": "Getting Started Guide",
+    "slug": "getting-started-guide",
+    "text": "<p>Welcome to our platform! This guide will help you...</p>",
+    "categories": ["5214c83d45667acd25394b54"],
+    "related": ["521509f145667acd25394b5b"],
+    "publicUrl": "http://docs.company.com/article/123-getting-started-guide",
+    "popularity": 4.2,
+    "viewCount": 1547,
+    "keywords": ["setup", "onboarding", "tutorial"],
+    "createdAt": "2023-01-15T10:30:00Z",
+    "updatedAt": "2024-01-10T14:20:00Z",
+    "lastPublishedAt": "2024-01-10T14:20:00Z"
+  }
+}
+```
+
+**GET /v1/collections/{id}/articles** - List articles in collection
+List all articles within a specific collection with filtering and sorting.
+
+Parameters:
+- `page` - Page number (default: 1)
+- `pageSize` - Items per page (max: 100, default: 50)
+- `status` - Filter by status (all/published/notpublished)
+- `sort` - Sort by (number/status/name/popularity/createdAt/updatedAt)
+- `order` - Sort order (asc/desc)
+
+Example:
+```bash
+curl --user {api_key}:X \
+  "https://docsapi.helpscout.net/v1/collections/123/articles?status=published&sort=popularity&order=desc"
+```
+
+**POST /v1/articles** - Create new article
+Create a new article with content, categories, and metadata.
+
+Request:
+```json
+{
+  "collectionId": "5214c77c45667acd25394b51",
+  "status": "published",
+  "slug": "billing-faq",
+  "name": "Billing FAQ",
+  "text": "<h2>Common Billing Questions</h2><p>Here are answers to frequently asked billing questions...</p>",
+  "categories": ["5214c83d45667acd25394b54"],
+  "related": ["521509f145667acd25394b5b"],
+  "keywords": ["billing", "faq", "payment"]
+}
+```
+
+Response:
+```json
+{
+  "article": {
+    "id": "5214c77c45667acd25394b52",
+    "number": 124,
+    "status": "published",
+    "name": "Billing FAQ",
+    "publicUrl": "http://docs.company.com/article/124-billing-faq",
+    "createdAt": "2024-01-15T10:00:00Z"
+  }
+}
+```
+
+**GET /v1/search/articles** - Search articles
+Search articles across collections with filtering options.
+
+Parameters:
+- `query` - Search terms
+- `collectionId` - Filter by collection
+- `siteId` - Filter by site
+- `visibility` - Filter by visibility (all/public/private)
+- `status` - Filter by status
+
+Example:
+```bash
+curl --user {api_key}:X \
+  "https://docsapi.helpscout.net/v1/search/articles?query=billing+payment&collectionId=123"
+```
+
+Response:
+```json
+{
+  "articles": {
+    "page": 1,
+    "pages": 3,
+    "count": 45,
+    "items": [{
+      "id": "5214c77c45667acd25394b51",
+      "number": 123,
+      "name": "Billing FAQ",
+      "preview": "Here are answers to frequently asked billing questions...",
+      "url": "/article/123-billing-faq",
+      "docsUrl": "http://docs.company.com/article/123-billing-faq",
+      "categoryIds": ["5214c83d45667acd25394b54"],
+      "visibility": "public",
+      "status": "published"
+    }]
+  }
+}
+```
+
+**POST /v1/articles/upload** - Upload article from file
+Create article by uploading HTML, text, or Markdown file.
+
+Request (multipart/form-data):
+- `collectionId` - Target collection ID
+- `file` - File to upload (HTML, text, or Markdown)
+- `name` - Article name (optional, uses filename if not provided)
+
+### Collections
+
+**GET /v1/collections** - List all collections
+List collections with filtering and sorting options.
+
+Parameters:
+- `page`, `siteId`, `visibility` (all/public/private)
+- `sort` (number/visibility/order/name/createdAt/updatedAt), `order`
+
+Response:
+```json
+{
+  "collections": {
+    "page": 1,
+    "pages": 2,
+    "count": 8,
+    "items": [{
+      "id": "52404efc4566740003092640",
+      "siteId": "52444cc53e3e9bd67a3dc68c", 
+      "number": 12,
+      "slug": "user-guide",
+      "visibility": "public",
+      "order": 1,
+      "name": "User Guide",
+      "description": "Complete user documentation",
+      "publicUrl": "http://docs.company.com/collection/12-user-guide",
+      "articleCount": 45,
+      "publishedArticleCount": 42,
+      "createdAt": "2023-06-15T09:00:00Z",
+      "updatedAt": "2024-01-10T16:30:00Z"
+    }]
+  }
+}
+```
+
+**POST /v1/collections** - Create new collection
+Create a new collection to organize articles.
+
+Request:
+```json
+{
+  "siteId": "52404efc4566740003092640",
+  "name": "API Documentation",
+  "description": "Complete API reference and guides",
+  "visibility": "public",
+  "order": 2
+}
+```
+
+### Categories
+
+**GET /v1/collections/{id}/categories** - List categories in collection
+List all categories within a specific collection.
+
+Response:
+```json
+{
+  "categories": {
+    "items": [{
+      "id": "5214c83d45667acd25394b54",
+      "collectionId": "5214c77c45667acd25394b50",
+      "number": 5,
+      "slug": "getting-started",
+      "name": "Getting Started",
+      "visibility": "public",
+      "order": 1,
+      "articleCount": 12,
+      "createdAt": "2023-06-15T10:00:00Z"
+    }]
+  }
+}
+```
+
+**POST /v1/categories** - Create new category
+Create a category to organize articles within a collection.
+
+Request:
+```json
+{
+  "collectionId": "5214c83d45667acd25394b53",
+  "name": "Billing & Payments",
+  "slug": "billing-payments",
+  "visibility": "public",
+  "order": 3,
+  "defaultSort": "name"
+}
+```
+
+### Sites
+
+**GET /v1/sites** - List all sites
+List all documentation sites associated with your account.
+
+Response:
+```json
+{
+  "sites": {
+    "items": [{
+      "id": "52444cc53e3e9bd67a3dc68c",
+      "status": "active",
+      "subDomain": "docs",
+      "cname": "docs.company.com",
+      "hasPublicSite": true,
+      "companyName": "Company Inc",
+      "title": "Company Documentation",
+      "logoUrl": "https://cdn.company.com/logo.png",
+      "logoWidth": 200,
+      "logoHeight": 50,
+      "homeUrl": "https://company.com",
+      "homeLinkText": "Back to Company",
+      "bgColor": "#ffffff",
+      "description": "Help documentation for Company's products",
+      "hasContactForm": true,
+      "mailboxId": "52404efc4566740003092640",
+      "contactEmail": "support@company.com",
+      "createdAt": "2023-01-15T10:00:00Z"
+    }]
+  }
+}
+```
+
+**POST /v1/sites** - Create new site
+Create a new documentation site.
+
+Request:
+```json
+{
+  "subDomain": "support",
+  "companyName": "Example Corp",
+  "title": "Example Support Center", 
+  "homeUrl": "https://example.com",
+  "homeLinkText": "Back to Example",
+  "hasContactForm": true,
+  "mailboxId": "52404efc4566740003092640"
+}
+```
+
+### Redirects
+
+**GET /v1/redirects/site/{siteId}** - List redirects for site
+List all URL redirects configured for a specific site.
+
+Response:
+```json
+{
+  "redirects": {
+    "items": [{
+      "id": "52444cc53e3e9bd67a3dc68d",
+      "siteId": "52444cc53e3e9bd67a3dc68c",
+      "urlMapping": "/article/22-old-article",
+      "type": "article",
+      "documentId": "5214c77c45667acd25394b51",
+      "redirect": "http://docs.company.com/article/123-new-article",
+      "createdAt": "2024-01-10T15:00:00Z"
+    }]
+  }
+}
+```
+
+**POST /v1/redirects** - Create URL redirect
+Create a redirect from an old URL to a new location.
+
+Request:
+```json
+{
+  "siteId": "52444cc53e3e9bd67a3dc68c",
+  "urlMapping": "/article/old-setup-guide",
+  "redirect": "http://docs.company.com/article/123-getting-started-guide"
+}
+```
+
+**GET /v1/redirects/find** - Find redirect by URL
+Check if a redirect exists for a specific URL mapping.
+
+Parameters:
+- `url` - The URL mapping to check
+
+### Article Revisions
+
+**GET /v1/articles/{id}/revisions** - List article revisions
+Get revision history for an article.
+
+Response:
+```json
+{
+  "revisions": {
+    "items": [{
+      "id": "revision123",
+      "createdAt": "2024-01-10T14:20:00Z",
+      "createdBy": {
+        "id": "user456",
+        "firstName": "John",
+        "lastName": "Editor"
+      }
+    }]
+  }
+}
+```
+
+### Error Handling
+
+All errors follow a consistent format:
+```json
+{
+  "code": 404,
+  "error": "Resource not found"
+}
+```
+
+Common HTTP status codes:
+- **200:** Success
+- **201:** Created (includes Location header)
+- **204:** Successfully deleted
+- **400:** Bad request format
+- **401:** Invalid API key
+- **403:** Access denied
+- **404:** Resource not found
+- **429:** Rate limit exceeded
+
+## Chat API
+
+**Base URL:** https://api.helpscout.net/chat/v1
+**Authentication:** OAuth 2.0 Bearer tokens
+**Format:** JSON
+
+API for managing Beacon chat conversations and retrieving chat-specific data.
+
+### Chat Conversations
+
+**GET /chat/v1/conversations/{id}** - Get chat conversation details
+Retrieve detailed information about a specific chat conversation including customer data and chat context.
+
+Request:
+```bash
+curl -H "Authorization: Bearer {token}" \
+  https://api.helpscout.net/chat/v1/conversations/12345
+```
+
+Response:
+```json
+{
+  "id": 12345,
+  "number": 67890,
+  "mailboxId": 123,
+  "assignee": {
+    "id": 456,
+    "type": "user",
+    "firstName": "John",
+    "lastName": "Agent",
+    "email": "john@company.com"
+  },
+  "customer": {
+    "id": 789,
+    "firstName": "Jane", 
+    "lastName": "Customer",
+    "email": "jane@example.com"
+  },
+  "status": "active",
+  "subject": "Chat conversation",
+  "preview": "Customer started a chat about billing",
+  "createdAt": "2024-01-15T14:30:00Z",
+  "modifiedAt": "2024-01-15T14:45:00Z",
+  "chatStartedBy": "customer",
+  "chatEndedBy": null,
+  "chatEndedAt": null
+}
+```
+
+**GET /chat/v1/conversations/{id}/events** - Get conversation events and messages
+Retrieve the complete timeline of events and messages for a chat conversation.
+
+Response:
+```json
+{
+  "events": [{
+    "id": "event123",
+    "type": "message",
+    "createdAt": "2024-01-15T14:30:00Z",
+    "author": {
+      "type": "customer",
+      "id": 789,
+      "name": "Jane Customer"
+    },
+    "body": "Hi, I have a question about my billing.",
+    "source": "chat"
+  }, {
+    "id": "event124", 
+    "type": "message",
+    "createdAt": "2024-01-15T14:32:00Z",
+    "author": {
+      "type": "user",
+      "id": 456,
+      "name": "John Agent"
+    },
+    "body": "Hello! I'd be happy to help with your billing question.",
+    "source": "chat"
+  }, {
+    "id": "event125",
+    "type": "chat_ended",
+    "createdAt": "2024-01-15T14:45:00Z",
+    "endedBy": {
+      "type": "customer",
+      "id": 789
+    }
+  }]
+}
+```
+
+## Webhooks
+
+Real-time event notifications sent via HTTP POST to your specified endpoints when events occur in Help Scout.
+
+### Webhook Payload Structure
+
+All webhook payloads follow a consistent structure:
+
+```json
+{
+  "timestamp": "2024-01-15T14:30:00Z",
+  "webhook": {
+    "id": 12345,
+    "url": "https://yourapp.com/webhook"
+  },
+  "eventType": "convo.created",
+  "data": {
+    // Event-specific data object
+  }
+}
+```
+
+### Security & Verification
+
+**HMAC SHA1 Signature Verification:**
+```bash
+# Verify using the X-HelpScout-Signature header
+expected_signature = "sha1=" + hmac.new(webhook_secret, payload, hashlib.sha1).hexdigest()
+received_signature = request.headers.get('X-HelpScout-Signature')
+```
+
+**Retry Mechanism:**
+- Automatic retries for failed deliveries (up to 10 attempts)
+- Exponential backoff between attempts (1s, 2s, 4s, 8s, etc.)
+- Webhooks disabled after repeated failures
+
+### Conversation Events
+
+**convo.created** - New conversation created
+```json
+{
+  "eventType": "convo.created",
+  "data": {
+    "id": 12345,
+    "number": 67890,
+    "type": "email",
+    "status": "active", 
+    "subject": "Need help with billing",
+    "mailboxId": 123,
+    "customer": {
+      "id": 456,
+      "firstName": "Jane",
+      "lastName": "Smith",
+      "email": "jane@example.com"
+    },
+    "assignee": null,
+    "createdAt": "2024-01-15T14:30:00Z"
+  }
+}
+```
+
+**convo.assigned** - Conversation assigned to user
+```json
+{
+  "eventType": "convo.assigned", 
+  "data": {
+    "id": 12345,
+    "assignee": {
+      "id": 789,
+      "firstName": "John",
+      "lastName": "Agent",
+      "email": "john@company.com"
+    },
+    "assignedBy": {
+      "id": 999,
+      "firstName": "Manager",
+      "lastName": "Smith"
+    }
+  }
+}
+```
+
+**convo.status** - Conversation status changed
+```json
+{
+  "eventType": "convo.status",
+  "data": {
+    "id": 12345,
+    "status": "closed",
+    "previousStatus": "active",
+    "closedBy": {
+      "id": 789,
+      "firstName": "John",
+      "lastName": "Agent"
+    }
+  }
+}
+```
+
+**convo.customer.reply.created** - Customer replied to conversation
+```json
+{
+  "eventType": "convo.customer.reply.created",
+  "data": {
+    "conversationId": 12345,
+    "thread": {
+      "id": 54321,
+      "type": "customer",
+      "body": "Thank you for your help!",
+      "customer": {
+        "id": 456,
+        "firstName": "Jane",
+        "lastName": "Smith"
+      },
+      "createdAt": "2024-01-15T15:00:00Z"
+    }
+  }
+}
+```
+
+### Customer Events
+
+**customer.created** - New customer created
+```json
+{
+  "eventType": "customer.created",
+  "data": {
+    "id": 456,
+    "firstName": "Jane",
+    "lastName": "Smith", 
+    "emails": [{
+      "id": 789,
+      "value": "jane@example.com",
+      "type": "work"
+    }],
+    "organization": "Example Corp",
+    "jobTitle": "Marketing Manager",
+    "createdAt": "2024-01-15T14:30:00Z"
+  }
+}
+```
+
+### Rating Events
+
+**satisfaction.ratings.received** - Customer satisfaction rating received
+```json
+{
+  "eventType": "satisfaction.ratings.received",
+  "data": {
+    "conversationId": 12345,
+    "rating": {
+      "id": 98765,
+      "rating": "great",
+      "ratingCustomerId": 456,
+      "ratingUserId": 789,
+      "comments": "Excellent support, very helpful!",
+      "createdAt": "2024-01-15T16:00:00Z"
+    }
+  }
+}
+```
+
+### Chat Events
+
+**beacon.chat.created** - New chat conversation started
+```json
+{
+  "eventType": "beacon.chat.created", 
+  "data": {
+    "conversationId": 12345,
+    "customer": {
+      "id": 456,
+      "firstName": "Jane",
+      "lastName": "Smith"
+    },
+    "beaconId": "beacon-abc123",
+    "startedAt": "2024-01-15T14:30:00Z"
+  }
+}
+```
+
+### Available Event Types
+
+**Conversation Events:**
+- `convo.assigned`, `convo.created`, `convo.deleted`, `convo.merged`, `convo.moved`
+- `convo.status`, `convo.tags.added`, `convo.tags.removed`
+- `convo.customer.reply.created`, `convo.agent.reply.created`, `convo.note.created`
+
+**Customer Events:**
+- `customer.created`, `customer.updated`, `customer.deleted`
+
+**Rating Events:**
+- `satisfaction.ratings.received`
+
+**Chat Events:**
+- `beacon.chat.created`, `beacon.chat.customer.reply.created`
+
+**Survey Events:**
+- `survey.response.received`
+
+**Tag Events:**
+- `tag.created`, `tag.updated`, `tag.deleted`
+
+## Apps Platform
+
+Platform for building custom applications that integrate directly into Help Scout's interface, displayed in the conversation sidebar.
+
+### JavaScript SDK
+
+The JavaScript SDK provides access to Help Scout's context and enables communication between your app and Help Scout.
+
+**HelpScout.getApplicationContext()** - Get current application context
+```javascript
+HelpScout.getApplicationContext().then(context => {
+  const { conversation, customer, user, inbox } = context;
+  
+  // Access conversation data
+  console.log('Conversation ID:', conversation.id);
+  console.log('Subject:', conversation.subject);
+  
+  // Access customer data
+  console.log('Customer:', customer.firstName, customer.lastName);
+  console.log('Email:', customer.emails[0].value);
+  
+  // Access current user
+  console.log('Agent:', user.firstName, user.lastName);
+  
+  // Access inbox info
+  console.log('Inbox:', inbox.name);
+});
+```
+
+**Context Object Structure:**
+```javascript
+{
+  conversation: {
+    id: 12345,
+    number: 67890,
+    subject: "Need help with billing",
+    status: "active",
+    type: "email",
+    threads: 3,
+    customFields: [{
+      id: 123,
+      name: "Priority",
+      value: "high"
+    }],
+    tags: ["billing", "urgent"]
+  },
+  customer: {
+    id: 456,
+    firstName: "Jane",
+    lastName: "Smith", 
+    emails: [{
+      id: 789,
+      value: "jane@example.com",
+      type: "work"
+    }],
+    phones: [{
+      id: 101,
+      value: "+1-555-123-4567",
+      type: "work"
+    }],
+    organization: "Example Corp",
+    jobTitle: "Marketing Manager"
+  },
+  user: {
+    id: 999,
+    firstName: "John",
+    lastName: "Agent",
+    email: "john@company.com",
+    role: "agent"
+  },
+  inbox: {
+    id: 123,
+    name: "General Support",
+    email: "support@company.com"
+  }
+}
+```
+
+**HelpScout.setHeight(height)** - Dynamically adjust app iframe height
+```javascript
+// Set height to 400px
+HelpScout.setHeight(400);
+
+// Auto-size based on content
+HelpScout.setHeight('auto');
+```
+
+**HelpScout.showModal(options)** - Display modal dialog
+```javascript
+HelpScout.showModal({
+  title: "Customer Details",
+  url: "https://yourapp.com/modal/customer/456",
+  width: 600,
+  height: 400
+});
+```
+
+**HelpScout.closeModal()** - Close current modal
+```javascript
+HelpScout.closeModal();
+```
+
+**Event Handling:**
+```javascript
+// Listen for context changes
+HelpScout.on('conversation.changed', (newConversation) => {
+  console.log('Switched to conversation:', newConversation.id);
+});
+
+// Listen for customer changes  
+HelpScout.on('customer.changed', (newCustomer) => {
+  console.log('Customer changed:', newCustomer.firstName);
+});
+```
+
+### React UI Kit
+
+Pre-built React components that match Help Scout's design system for consistent app interfaces.
+
+**Installation:**
+```bash
+npm install @helpscout/ui-kit
+```
+
+**Core Components:**
+
+**Button Component:**
+```jsx
+import { Button } from '@helpscout/ui-kit';
+
+<Button variant="primary" size="md" onClick={handleClick}>
+  Save Changes
+</Button>
+```
+
+**Input Component:**
+```jsx
+import { Input } from '@helpscout/ui-kit';
+
+<Input
+  type="text"
+  placeholder="Enter customer name"
+  value={customerName}
+  onChange={(e) => setCustomerName(e.target.value)}
+/>
+```
+
+**Modal Component:**
+```jsx
+import { Modal } from '@helpscout/ui-kit';
+
+<Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+  <Modal.Header>
+    <Modal.Title>Customer Information</Modal.Title>
+  </Modal.Header>
+  <Modal.Body>
+    <p>Customer details here...</p>
+  </Modal.Body>
+  <Modal.Footer>
+    <Button onClick={() => setIsModalOpen(false)}>Close</Button>
+  </Modal.Footer>
+</Modal>
+```
+
+**Layout Components:**
+```jsx
+import { Box, Flex, Grid } from '@helpscout/ui-kit';
+
+<Box padding="md" backgroundColor="grey.100">
+  <Flex direction="column" gap="sm">
+    <Grid columns="1fr 1fr" gap="md">
+      <div>Column 1</div>
+      <div>Column 2</div>
+    </Grid>
+  </Flex>
+</Box>
+```
+
+**Available Components:**
+- **Form:** Button, Input, Select, Checkbox, Radio, TextArea
+- **Layout:** Box, Flex, Grid, Container, Spacer
+- **Display:** Badge, Avatar, Card, Table, List
+- **Feedback:** Modal, Toast, Spinner, ProgressBar
+- **Typography:** Heading, Text, Link
+
+### App Configuration
+
+**App Manifest (helpscout-app.json):**
+```json
+{
+  "name": "Customer Analytics",
+  "description": "Advanced customer insights and analytics",
+  "version": "1.0.0",
+  "icon": "https://yourapp.com/icon.png",
+  "appUrl": "https://yourapp.com/helpscout-app",
+  "debug": {
+    "url": "http://localhost:3000"
+  },
+  "settings": [{
+    "name": "api_key", 
+    "label": "API Key",
+    "type": "text",
+    "required": true
+  }]
+}
+```
+
+### Security & Authentication
+
+**Signature Validation:**
+Help Scout signs all requests to your app with HMAC SHA256.
+
+```javascript
+const crypto = require('crypto');
+
+function validateSignature(payload, signature, secret) {
+  const expectedSignature = crypto
+    .createHmac('sha256', secret)
+    .update(payload)
+    .digest('base64');
+    
+  return crypto.timingSafeEqual(
+    Buffer.from(signature),
+    Buffer.from(expectedSignature)
+  );
+}
+
+// Express.js middleware example
+app.use('/helpscout-app', (req, res, next) => {
+  const signature = req.headers['x-helpscout-signature'];
+  const payload = JSON.stringify(req.body);
+  
+  if (!validateSignature(payload, signature, process.env.APP_SECRET)) {
+    return res.status(401).send('Invalid signature');
+  }
+  
+  next();
+});
+```
+
+## Beacon (Customer Widget)
+
+Embeddable help widget for customer-facing websites and mobile applications that provides knowledge base search, contact forms, and chat functionality.
+
+### Web Integration
+
+**Basic Setup:**
+```html
+<script>
+!function(e,t,n){function a(){var e=t.getElementsByTagName("script")[0],n=t.createElement("script");n.type="text/javascript",n.async=!0,n.src="https://beacon-v2.helpscout.net",e.parentNode.insertBefore(n,e)}if(e.Beacon=n=function(t,n,a){e.Beacon.readyQueue.push({method:t,options:n,data:a})},n.readyQueue=[],"complete"===t.readyState)return a();e.attachEvent?e.attachEvent("onload",a):e.addEventListener("load",a,!1)}(window,document,window.Beacon||function(){});
+</script>
+
+<script>
+  // Initialize Beacon with your Beacon ID
+  window.Beacon('init', 'your-beacon-id')
+</script>
+```
+
+**JavaScript API Methods:**
+
+**Beacon('init', beaconId)** - Initialize Beacon
+```javascript
+// Basic initialization
+Beacon('init', 'a1b2c3d4-e5f6-7890-abcd-ef1234567890');
+
+// With configuration options
+Beacon('init', 'a1b2c3d4-e5f6-7890-abcd-ef1234567890', {
+  mode: 'ask',           // ask, self, neutral
+  color: '#FF6600',      // Custom brand color
+  icon: 'question',      // question, message, search, beacon
+  zIndex: 1050,          // Z-index for positioning
+  instructions: 'How can we help you today?',
+  labels: {
+    searchLabel: 'Search for answers...',
+    searchErrorLabel: 'No results found',
+    contactLabel: 'Send us a message',
+    attachFileLabel: 'Attach a file'
+  }
+});
+```
+
+**Beacon('open')** - Open Beacon widget
+```javascript
+Beacon('open');
+```
+
+**Beacon('close')** - Close Beacon widget
+```javascript
+Beacon('close');
+```
+
+**Beacon('toggle')** - Toggle Beacon open/closed
+```javascript
+Beacon('toggle');
+```
+
+**Beacon('search', query)** - Open with search query
+```javascript
+Beacon('search', 'billing questions');
+```
+
+**Beacon('article', articleId)** - Open specific article
+```javascript
+Beacon('article', '5a123b456c789d012e345f67');
+```
+
+**Beacon('navigate', route)** - Navigate to specific page
+```javascript
+// Available routes: '/', '/ask/', '/search/', '/previous-messages/'
+Beacon('navigate', '/ask/');
+```
+
+**User Identification & Secure Mode:**
+
+**Beacon('identify', userData)** - Identify current user
+```javascript
+Beacon('identify', {
+  name: 'Jane Smith',
+  email: 'jane@example.com',
+  company: 'Example Corp',
+  jobTitle: 'Marketing Manager',
+  avatar: 'https://example.com/jane-avatar.jpg'
+});
+```
+
+**Secure Mode Implementation:**
+```javascript
+// Generate hash server-side (PHP example)
+$hash = hash_hmac('sha256', $user_email, $beacon_secret_key);
+
+// Frontend implementation
+Beacon('init', 'beacon-id', {
+  signature: {
+    user_email: 'jane@example.com',
+    user_hash: 'generated_hash_from_server'
+  }
+});
+```
+
+**Custom Data & Session Attributes:**
+
+**Beacon('session-data', data)** - Set session attributes
+```javascript
+Beacon('session-data', {
+  'account-type': 'Premium',
+  'plan': 'Pro',
+  'user-id': '12345',
+  'last-login': '2024-01-15',
+  'feature-flags': ['beta-feature', 'new-ui']
+});
+```
+
+**Beacon('prefill', data)** - Pre-fill contact form
+```javascript
+Beacon('prefill', {
+  name: 'Jane Smith',
+  email: 'jane@example.com',
+  subject: 'Billing Question',
+  text: 'I have a question about my recent invoice...'
+});
+```
+
+**Event Handling:**
+
+**Listen for Beacon events:**
+```javascript
+Beacon('on', 'open', function() {
+  console.log('Beacon opened');
+  // Track analytics, show notifications, etc.
+});
+
+Beacon('on', 'close', function() {
+  console.log('Beacon closed');
+});
+
+Beacon('on', 'email-sent', function() {
+  console.log('Customer sent a message');
+  // Track conversion, show thank you message, etc.
+});
+
+Beacon('on', 'identify', function(user) {
+  console.log('User identified:', user);
+});
+
+// Available events: open, close, email-sent, identify, navigate
+```
+
+**Configuration Options:**
+
+**Display & Behavior:**
+```javascript
+Beacon('config', {
+  display: {
+    style: 'icon',      // icon, text, iconAndText
+    text: 'Help',       // Custom button text
+    position: 'br',     // bl, br, bc (bottom-left, bottom-right, bottom-center)
+    offset: {
+      bottom: '20px',
+      horizontal: '20px'
+    }
+  },
+  modal: false,          // Open in modal instead of slide-out
+  enableFabAnimation: true,
+  attachment: true,      // Allow file attachments
+  poweredBy: false       // Hide "Powered by Help Scout"
+});
+```
+
+**Messaging & Labels:**
+```javascript
+Beacon('config', {
+  messaging: {
+    contactForm: {
+      showSubject: true,
+      subjectLabel: 'What can we help you with?'
+    }
+  }
+});
+```
+
+### Mobile SDKs
+
+**iOS SDK Integration:**
+```swift
+import Beacon
+
+// Initialize in AppDelegate
+func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+    HSBeacon.open("beacon-id")
+    return true
+}
+
+// Open Beacon
+HSBeacon.open()
+
+// Identify user
+let user = HSBeaconUser()
+user.email = "jane@example.com"
+user.name = "Jane Smith"
+HSBeacon.identify(user)
+
+// Set session attributes
+HSBeacon.setSessionData(["account-type": "Premium", "user-id": "12345"])
+
+// Navigate to specific article
+HSBeacon.openArticle("article-id")
+```
+
+**Android SDK Integration:**
+```java
+import com.helpscout.beacon.Beacon;
+import com.helpscout.beacon.model.BeaconUser;
+
+// Initialize in Application class
+public class MyApplication extends Application {
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        Beacon.Builder builder = new Beacon.Builder("beacon-id");
+        Beacon.install(this, builder);
+    }
+}
+
+// Open Beacon
+Beacon.open(activity);
+
+// Identify user
+BeaconUser user = new BeaconUser.Builder()
+    .withEmail("jane@example.com")
+    .withName("Jane Smith")
+    .build();
+Beacon.identify(user);
+
+// Set session attributes
+Map<String, String> sessionData = new HashMap<>();
+sessionData.put("account-type", "Premium");
+sessionData.put("user-id", "12345");
+Beacon.setSessionData(sessionData);
+```
+
+### Customization & Theming
+
+**CSS Customization:**
+```css
+/* Customize Beacon button */
+#beacon-container .BeaconFabButtonFrame {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+/* Customize Beacon content */
+.BeaconContainer {
+  font-family: 'Your Custom Font', sans-serif;
+}
+
+/* Custom styling for articles */
+.ArticleWrapper h1 {
+  color: #333;
+  font-size: 24px;
+}
+```
+
+**Developer Tools:**
+
+**Beacon('log')** - Enable debug logging
+```javascript
+Beacon('log');  // View internal events in console
+```
+
+**Beacon('destroy')** - Remove Beacon completely
+```javascript
+Beacon('destroy');
+```
+
+**Beacon('reset')** - Clear user data and session
+```javascript
+Beacon('reset');
+```
+
+### Best Practices
+
+1. **Performance:** Load Beacon asynchronously to avoid blocking page load
+2. **User Experience:** Use appropriate mode (ask/self/neutral) based on your support workflow  
+3. **Security:** Always use Secure Mode for authenticated users
+4. **Customization:** Match Beacon styling to your brand colors and fonts
+5. **Analytics:** Track Beacon events for usage insights and optimization
+6. **Mobile:** Implement native SDKs for better mobile app integration
+
+## Authentication
+
+### OAuth 2.0 (Recommended)
+
+**Authorization Code Flow** - For third-party integrations
+1. Redirect user to Help Scout authorization endpoint
+2. User grants permission
+3. Exchange authorization code for access token
+4. Use access token for API requests
+
+**Client Credentials Flow** - For server-to-server integrations
+1. Request access token using client credentials
+2. Use access token for API requests
+
+**Token Management:**
+- Access tokens expire after 2 days
+- Refresh tokens for automatic renewal
+- Include tokens in Authorization header: `Bearer {token}`
+
+### API Key Authentication (Docs API)
+
+HTTP Basic Authentication using API key as username with dummy password.
+
+## Error Handling
+
+All APIs use standard HTTP status codes:
+- 200: Success
+- 201: Created
+- 204: No Content
+- 400: Bad Request
+- 401: Unauthorized
+- 403: Forbidden
+- 404: Not Found
+- 422: Validation Error
+- 429: Rate Limited
+- 500: Internal Server Error
+
+Error responses include detailed error messages and, where applicable, field-specific validation errors.
+
+## Response Formats
+
+### HAL+JSON (Hypertext Application Language)
+Primary response format for Inbox API 2.0, including:
+- Resource data in standard JSON
+- `_links` object with related resource URLs
+- `_embedded` object with included related resources
+
+### Pagination
+- Consistent pagination across all list endpoints
+- `page` and `limit` query parameters
+- Response includes pagination metadata and navigation links
+
+### Rate Limit Headers
+All responses include rate limiting information:
+- `X-RateLimit-Limit` - Request limit per time window
+- `X-RateLimit-Remaining` - Requests remaining in current window
+- `X-RateLimit-Reset` - Unix timestamp when limit resets
+
+For detailed API documentation, examples, and interactive testing, visit https://developer.helpscout.com
