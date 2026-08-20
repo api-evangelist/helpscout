@@ -21,6 +21,13 @@ accessModel:
   method: derived
 image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/helpscout.png
 tags:
+- Customer-Support
+- Help Desk
+- Email
+- Live Chat
+- Knowledge Base
+- Software-as-a-Service
+tags_raw:
 - Customer Support
 - Help Desk
 - Email
@@ -66,6 +73,9 @@ apis:
 - aid: helpscout:helpscout-users-api
   name: Help Scout Users API
   tags:
+  - User
+  - Agents
+  tags_raw:
   - Users
   - Agents
   properties:
@@ -76,6 +86,8 @@ apis:
 - aid: helpscout:helpscout-teams-api
   name: Help Scout Teams API
   tags:
+  - Team
+  tags_raw:
   - Teams
   properties:
   - url: https://developer.helpscout.com/mailbox-api/endpoints/teams/list/
@@ -114,6 +126,9 @@ apis:
   name: Help Scout Attachments API
   tags:
   - Attachments
+  - File
+  tags_raw:
+  - Attachments
   - Files
   properties:
   - url: https://developer.helpscout.com/mailbox-api/endpoints/conversations/attachments/data/
@@ -144,6 +159,9 @@ apis:
 - aid: helpscout:helpscout-webhooks-api
   name: Help Scout Webhooks API
   tags:
+  - Webhook
+  - Event
+  tags_raw:
   - Webhooks
   - Events
   properties:
@@ -191,6 +209,10 @@ apis:
 - aid: helpscout:helpscout-apps-api
   name: Help Scout Apps API
   tags:
+  - Application
+  - Sidebar
+  - Marketplace
+  tags_raw:
   - Apps
   - Sidebar
   - Marketplace
@@ -259,6 +281,8 @@ apis:
   name: Help Scout Teams API
   description: The Teams API from Help Scout — 1 operation(s) for teams.
   tags:
+  - Team
+  tags_raw:
   - Teams
   properties:
   - type: OpenAPI
@@ -287,6 +311,8 @@ apis:
   name: Help Scout Users API
   description: The Users API from Help Scout — 1 operation(s) for users.
   tags:
+  - User
+  tags_raw:
   - Users
   properties:
   - type: OpenAPI
@@ -301,6 +327,8 @@ apis:
   name: Help Scout Webhooks API
   description: The Webhooks API from Help Scout — 1 operation(s) for webhooks.
   tags:
+  - Webhook
+  tags_raw:
   - Webhooks
   properties:
   - type: OpenAPI
