@@ -199,6 +199,10 @@ apis:
 - aid: helpscout:helpscout-beacon-api
   name: Help Scout Beacon API
   tags:
+  - beacon
+  - Live Chat
+  - Embed
+  tags_raw:
   - Beacon
   - Live Chat
   - Embed
