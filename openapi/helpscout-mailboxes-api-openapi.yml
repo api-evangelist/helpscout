@@ -1,6 +1,6 @@
-openapi: 3.1.0
+openapi: 3.2.0
 info:
-  title: Help Scout Mailbox Conversations Mailboxes API
+  title: Help Scout Mailbox Mailboxes API
   description: Minimal OpenAPI description for Help Scout's Mailbox API v2 covering core resources for conversations, threads, customers, mailboxes, users, teams, tags, workflows, and webhooks. Generated from public documentation; verify before production use.
   version: '2.0'
   contact:
