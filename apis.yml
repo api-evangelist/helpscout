@@ -295,6 +295,8 @@ apis:
   - url: https://developer.helpscout.com/mailbox-api/endpoints/workflows/list/
     type: Documentation
 common:
+- type: VendorFacets
+  url: vendor-facets/helpscout-vendor-facets.yml
 - type: PostmanWorkspace
   url: https://www.postman.com/kinlaneapi/help-scout/overview
 - type: AgenticAccess
