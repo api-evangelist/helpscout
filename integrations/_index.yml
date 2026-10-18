@@ -118,7 +118,7 @@
     - alpha
     in_cloud: true
     builder: unknown (community connector; contributor not in the record)
-  status: pending-generation
+  status: not-a-workflow
   arazzo: null
 - slug: helpscout-meltano
   label: Meltano
@@ -150,7 +150,7 @@
     - bronze
     - unknown
     builder: 'community (Meltano Hub variant maintainers: bytecodeio, singer-io)'
-  status: pending-partner-spec
+  status: not-a-workflow
   arazzo: null
 - slug: helpscout-google-workspace-own
   label: Google Workspace (own)
