@@ -1,4 +1,4 @@
-# Help Scout (helpscout)
+# Help Scout
 
 <!-- API-EVANGELIST-PROVENANCE:BEGIN -->
 > ### About this repository
@@ -66,310 +66,188 @@
 
 Help Scout is an email-first help desk platform with shared inboxes, live chat, knowledge bases, and a customer portal. The Help Scout APIs expose conversations, customers, inboxes, users, workflows, ratings, reports, Docs (knowledge base), Beacon (in-app messaging), and webhooks.
 
-**APIs.json:** [https://raw.githubusercontent.com/api-evangelist/helpscout/refs/heads/main/apis.yml](https://raw.githubusercontent.com/api-evangelist/helpscout/refs/heads/main/apis.yml)
+**Areas:** Customer Service · Help Desk · Email · Live Chat · Knowledge Base · Software-as-a-Service
 
-## Tags
+## Help Scout on APIs.io
 
-- Customer Support
-- Help Desk
-- Email
-- Live Chat
-- Knowledge Base
-- SaaS
+Everything profiled for Help Scout is published on APIs.io rather than in this repository. Start at the provider page — **[apis.io/providers/helpscout/](https://apis.io/providers/helpscout/)** — or go straight to one of the APIs or properties below.
 
-## Timestamps
+### APIs (17)
 
-- **Created:** 2026-05-08
-- **Modified:** 2026-05-30
+- [Help Scout Custom Fields API](https://apis.io/apis/helpscout/helpscout-custom-fields-api/) — Read custom field definitions on inboxes and read / update custom field values on conversations.
+- [Help Scout Attachments API](https://apis.io/apis/helpscout/helpscout-attachments-api/) — Upload and download attachment data for conversation threads.
+- [Help Scout Ratings API](https://apis.io/apis/helpscout/helpscout-ratings-api/) — Read customer satisfaction ratings (great / okay / not good) attached to conversation threads.
+- [Help Scout Reports API](https://apis.io/apis/helpscout/helpscout-reports-api/) — Aggregated reports across company performance, conversations, happiness ratings, productivity, and user/team statistics.
+- [Help Scout Docs API](https://apis.io/apis/helpscout/helpscout-docs-api/) — Manage knowledge-base sites, collections, categories, articles, and search/related content for Help Scout Docs.
+- [Help Scout Beacon API](https://apis.io/apis/helpscout/helpscout-beacon-api/) — Embed Beacon (live chat, help docs, customer portal) into web and mobile applications and pre-fill or update Beacon context via the Beacon JS API.
+- [Help Scout Chat API](https://apis.io/apis/helpscout/helpscout-chat-api/) — Read and write live chat conversations and messages alongside the email Mailbox API for unified ticketing.
+- [Help Scout Apps API](https://apis.io/apis/helpscout/helpscout-apps-api/) — Build sidebar applications that render custom content within the Help Scout Inbox UI for partner integrations.
+- [Help Scout Conversations API](https://apis.io/apis/helpscout/helpscout-conversations-api/) — The Conversations API from Help Scout — 2 operation(s) for conversations.
+- [Help Scout Customers API](https://apis.io/apis/helpscout/helpscout-customers-api/) — Manage customer profiles including addresses, emails, phone numbers, chat handles, social profiles, websites, and properties.
+- [Help Scout Mailboxes API](https://apis.io/apis/helpscout/helpscout-mailboxes-api/) — Read mailbox / inbox configuration including routing settings, saved replies, custom fields, and folders.
+- [Help Scout Tags API](https://apis.io/apis/helpscout/helpscout-tags-api/) — List, create, and apply tags to conversations for categorization, automation, and reporting.
+- [Help Scout Teams API](https://apis.io/apis/helpscout/helpscout-teams-api/) — Manage teams that group users for routing and assignment within shared inboxes.
+- [Help Scout Threads API](https://apis.io/apis/helpscout/helpscout-threads-api/) — Append customer replies, agent replies, internal notes, phone, chat, and forwards to an existing conversation as new threads.
+- [Help Scout Users API](https://apis.io/apis/helpscout/helpscout-users-api/) — Retrieve Help Scout user accounts (agents) including roles, permissions, and online/offline status.
+- [Help Scout Webhooks API](https://apis.io/apis/helpscout/helpscout-webhooks-api/) — Subscribe to Help Scout events (convo.created, convo.assigned, convo.tag, customer.created, rating.received) for downstream automation. Webhooks include…
+- [Help Scout Workflows API](https://apis.io/apis/helpscout/helpscout-workflows-api/) — List automation workflows and trigger them manually against a conversation.
 
-## APIs
+### Published properties
 
-### Help Scout Conversations API
+Each property below is a page on APIs.io carrying the machine-readable artifact and what it says.
 
-Create, retrieve, list, update, and delete conversations including threads, attachments, custom fields, tags, and snooze states. Core Mailbox API resource for ticket-style customer interactions.
+#### AsyncAPI (1)
 
-#### Tags
+Event-driven and webhook contracts.
 
-- Conversations
-- Threads
-- Tickets
+- [Help Scout Webhooks](https://apis.io/asyncapis/helpscout/helpscout-webhooks-asyncapi/)
 
-#### Properties
+#### Event channels (1)
 
-- [Documentation](https://developer.helpscout.com/mailbox-api/)
-- [API Reference](https://developer.helpscout.com/mailbox-api/endpoints/conversations/list/)
-- [OpenAPI](openapi/helpscout-openapi.yml) — [OpenAPI Specification](https://spec.openapis.org/oas/latest.html)
-- [Postman Collection](collections/helpscout.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/helpscout.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
+Individual events and webhooks the provider emits.
 
-### Help Scout Threads API
+- [/webhook](https://apis.io/channels/helpscout/webhook/)
 
-Append customer replies, agent replies, internal notes, phone, chat, and forwards to an existing conversation as new threads.
+#### GraphQL (1)
 
-#### Tags
+GraphQL schemas.
 
-- Threads
-- Replies
+- [Moved to /providers/helpscout/](https://apis.io/graphqls/helpscout/helpscout-graphql/)
 
-#### Properties
+#### Agentic access (1)
 
-- [Documentation](https://developer.helpscout.com/mailbox-api/endpoints/conversations/threads/)
-- [Postman Collection](collections/helpscout.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/helpscout.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
+Which operations an agent can call, which act, and which need a human in the loop.
 
-### Help Scout Customers API
+- [Helpscout Agentic Access](https://apis.io/agentic-access/helpscout/helpscout-agentic-access/)
 
-Manage customer profiles including addresses, emails, phone numbers, chat handles, social profiles, websites, and properties.
+#### Collections (19)
 
-#### Tags
+Postman and Open Collection request collections.
 
-- Customers
-- Contacts
+- [Help Scout Mailbox API](https://apis.io/collections/helpscout/open-helpscout/)
+- [Help Scout Mailbox Conversations API](https://apis.io/collections/helpscout/open-helpscout-conversations-api/)
+- [Help Scout Mailbox Conversations Customers API](https://apis.io/collections/helpscout/open-helpscout-customers-api/)
+- [Help Scout Mailbox Conversations Mailboxes API](https://apis.io/collections/helpscout/open-helpscout-mailboxes-api/)
+- [Help Scout Mailbox Conversations Tags API](https://apis.io/collections/helpscout/open-helpscout-tags-api/)
+- [Help Scout Mailbox Conversations Teams API](https://apis.io/collections/helpscout/open-helpscout-teams-api/)
+- [Help Scout Mailbox Conversations Threads API](https://apis.io/collections/helpscout/open-helpscout-threads-api/)
+- [Help Scout Mailbox Conversations Users API](https://apis.io/collections/helpscout/open-helpscout-users-api/)
+- [Help Scout Mailbox Conversations Webhooks API](https://apis.io/collections/helpscout/open-helpscout-webhooks-api/)
+- [Help Scout Mailbox Conversations Workflows API](https://apis.io/collections/helpscout/open-helpscout-workflows-api/)
+- [Help Scout Mailbox Conversations API](https://apis.io/collections/helpscout/postman-helpscout-conversations-api/)
+- [Help Scout Mailbox Conversations Customers API](https://apis.io/collections/helpscout/postman-helpscout-customers-api/)
+- [Help Scout Mailbox Conversations Mailboxes API](https://apis.io/collections/helpscout/postman-helpscout-mailboxes-api/)
+- [Help Scout Mailbox Conversations Tags API](https://apis.io/collections/helpscout/postman-helpscout-tags-api/)
+- [Help Scout Mailbox Conversations Teams API](https://apis.io/collections/helpscout/postman-helpscout-teams-api/)
+- [Help Scout Mailbox Conversations Threads API](https://apis.io/collections/helpscout/postman-helpscout-threads-api/)
+- [Help Scout Mailbox Conversations Users API](https://apis.io/collections/helpscout/postman-helpscout-users-api/)
+- [Help Scout Mailbox Conversations Webhooks API](https://apis.io/collections/helpscout/postman-helpscout-webhooks-api/)
+- [Help Scout Mailbox Conversations Workflows API](https://apis.io/collections/helpscout/postman-helpscout-workflows-api/)
 
-#### Properties
+#### Governance rules (1)
 
-- [Documentation](https://developer.helpscout.com/mailbox-api/endpoints/customers/list/)
-- [Postman Collection](collections/helpscout.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/helpscout.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
+Spectral rulesets for the provider's contracts.
 
-### Help Scout Mailboxes API
+- [Help Scout — asyncapi rules](https://apis.io/rules/helpscout/helpscout-asyncapi-spectral-rules/)
 
-Read mailbox / inbox configuration including routing settings, saved replies, custom fields, and folders.
+#### Security (3)
 
-#### Tags
+Authentication, trust centre, and vulnerability disclosure.
 
-- Mailboxes
-- Inboxes
+- [Helpscout Authentication](https://apis.io/security/helpscout/helpscout-authentication/)
+- [Helpscout Domain Security](https://apis.io/security/helpscout/helpscout-domain-security/)
+- [Helpscout Trust Center](https://apis.io/security/helpscout/helpscout-trust-center/)
 
-#### Properties
+#### OAuth scopes (1)
 
-- [Documentation](https://developer.helpscout.com/mailbox-api/endpoints/mailboxes/list/)
-- [Postman Collection](collections/helpscout.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/helpscout.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
+The permissions the API asks for.
 
-### Help Scout Users API
+- [Helpscout Scopes](https://apis.io/scopes/helpscout/helpscout-scopes/)
 
-Retrieve Help Scout user accounts (agents) including roles, permissions, and online/offline status.
+#### Plans and pricing (1)
 
-#### Tags
+Published plans, tiers and prices.
 
-- Users
-- Agents
+- [Helpscout Plans Pricing](https://apis.io/plans/helpscout/helpscout-plans-pricing/)
 
-#### Properties
+#### Rate limits (1)
 
-- [Documentation](https://developer.helpscout.com/mailbox-api/endpoints/users/list/)
-- [Postman Collection](collections/helpscout.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/helpscout.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
+Published request limits.
 
-### Help Scout Teams API
+- [Helpscout Rate Limits](https://apis.io/rate-limits/helpscout/helpscout-rate-limits/)
 
-Manage teams that group users for routing and assignment within shared inboxes.
+#### FinOps (1)
 
-#### Tags
+What the API costs to run, by operation.
 
-- Teams
+- [Helpscout Finops](https://apis.io/finops/helpscout/helpscout-finops/)
 
-#### Properties
+## Where to find this API
 
-- [Documentation](https://developer.helpscout.com/mailbox-api/endpoints/teams/list/)
-- [Postman Collection](collections/helpscout.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/helpscout.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
+Links to the company's own pages. This repository publishes no copy of their specifications — the canonical document is theirs and lives at the URLs below.
 
-### Help Scout Tags API
-
-List, create, and apply tags to conversations for categorization, automation, and reporting.
-
-#### Tags
-
-- Tags
-- Categorization
-
-#### Properties
-
-- [Documentation](https://developer.helpscout.com/mailbox-api/endpoints/tags/list/)
-- [Postman Collection](collections/helpscout.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/helpscout.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
-
-### Help Scout Workflows API
-
-List automation workflows and trigger them manually against a conversation.
-
-#### Tags
-
-- Workflows
-- Automation
-
-#### Properties
-
-- [Documentation](https://developer.helpscout.com/mailbox-api/endpoints/workflows/list/)
-- [Postman Collection](collections/helpscout.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/helpscout.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
-
-### Help Scout Custom Fields API
-
-Read custom field definitions on inboxes and read / update custom field values on conversations.
-
-#### Tags
-
-- Custom Fields
-- Metadata
-
-#### Properties
-
-- [Documentation](https://developer.helpscout.com/mailbox-api/endpoints/conversations/custom_fields/)
-- [Postman Collection](collections/helpscout.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/helpscout.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
-
-### Help Scout Attachments API
-
-Upload and download attachment data for conversation threads.
-
-#### Tags
-
-- Attachments
-- Files
-
-#### Properties
-
-- [Documentation](https://developer.helpscout.com/mailbox-api/endpoints/conversations/attachments/data/)
-- [Postman Collection](collections/helpscout.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/helpscout.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
-
-### Help Scout Ratings API
-
-Read customer satisfaction ratings (great / okay / not good) attached to conversation threads.
-
-#### Tags
-
-- Ratings
-- Happiness
-- CSAT
-
-#### Properties
-
-- [Documentation](https://developer.helpscout.com/mailbox-api/endpoints/reports/happiness/)
-- [Postman Collection](collections/helpscout.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/helpscout.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
-
-### Help Scout Reports API
-
-Aggregated reports across company performance, conversations, happiness ratings, productivity, and user/team statistics.
-
-#### Tags
-
-- Reports
-- Analytics
-
-#### Properties
-
-- [Documentation](https://developer.helpscout.com/mailbox-api/endpoints/reports/)
-- [Postman Collection](collections/helpscout.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/helpscout.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
-
-### Help Scout Webhooks API
-
-Subscribe to Help Scout events (convo.created, convo.assigned, convo.tag, customer.created, rating.received) for downstream automation. Webhooks include HMAC signatures for verification.
-
-#### Tags
-
-- Webhooks
-- Events
-
-#### Properties
-
-- [Documentation](https://developer.helpscout.com/webhooks/)
-- [AsyncAPI](asyncapi/helpscout-webhooks-asyncapi.yml) — [AsyncAPI Specification](https://www.asyncapi.com/docs/reference/specification/latest)
-- [Postman Collection](collections/helpscout.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/helpscout.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
-
-### Help Scout Docs API
-
-Manage knowledge-base sites, collections, categories, articles, and search/related content for Help Scout Docs.
-
-#### Tags
-
-- Docs
-- Knowledge Base
-- Articles
-
-#### Properties
-
-- [Documentation](https://developer.helpscout.com/docs-api/)
-- [Postman Collection](collections/helpscout.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/helpscout.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
-
-### Help Scout Beacon API
-
-Embed Beacon (live chat, help docs, customer portal) into web and mobile applications and pre-fill or update Beacon context via the Beacon JS API.
-
-#### Tags
-
-- Beacon
-- Live Chat
-- Embed
-
-#### Properties
-
-- [Documentation](https://developer.helpscout.com/beacon-2/)
-- [Postman Collection](collections/helpscout.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/helpscout.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
-
-### Help Scout Chat API
-
-Read and write live chat conversations and messages alongside the email Mailbox API for unified ticketing.
-
-#### Tags
-
-- Chat
-- Live Chat
-
-#### Properties
-
-- [Documentation](https://developer.helpscout.com/)
-- [Postman Collection](collections/helpscout.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/helpscout.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
-
-### Help Scout Apps API
-
-Build sidebar applications that render custom content within the Help Scout Inbox UI for partner integrations.
-
-#### Tags
-
-- Apps
-- Sidebar
-- Marketplace
-
-#### Properties
-
-- [Documentation](https://developer.helpscout.com/apps/)
-- [Postman Collection](collections/helpscout.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/helpscout.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
-
-## Common Properties
-
-- [LinkedIn](https://www.linkedin.com/company/help-scout)
 - [Website](https://www.helpscout.com/)
 - [Documentation](https://developer.helpscout.com/)
-- [API Reference](https://developer.helpscout.com/mailbox-api/)
+- [API reference](https://developer.helpscout.com/mailbox-api/)
 - [Pricing](https://www.helpscout.com/pricing/)
-- [Login](https://secure.helpscout.net/login/)
-- [Status Page](https://status.helpscout.com/)
-- [Blog](https://www.helpscout.com/blog/)
 - [Support](https://support.helpscout.com/)
-- [GitHub Organization](https://github.com/helpscout)
-- [Privacy Policy](https://www.helpscout.com/company/legal/privacy/)
-- [Terms of Service](https://www.helpscout.com/company/legal/terms-of-service/)
-- [Authentication](https://developer.helpscout.com/mailbox-api/overview/authentication/)
-- [Rate Limits](https://developer.helpscout.com/mailbox-api/overview/rate-limiting/)
-- [Webhooks](https://developer.helpscout.com/webhooks/)
-- [Plans](plans/helpscout-plans-pricing.yml)
-- [Rate Limits](rate-limits/helpscout-rate-limits.yml)
-- [Fin Ops](finops/helpscout-finops.yml)
-- [Features](undefined)
-- [L L Ms Txt](https://developer.helpscout.com/llms.txt)
+- [Blog](https://www.helpscout.com/blog/)
+- [Terms of service](https://www.helpscout.com/company/legal/terms-of-service/)
+- [Privacy policy](https://www.helpscout.com/company/legal/privacy/)
+- [GitHub](https://github.com/helpscout)
+- [Status](https://status.helpscout.com/)
 
-## Maintainers
+## API Evangelist rating
 
-**FN:** Kin Lane
-**Email:** kin@apievangelist.com
+**Kin Score 45.4** — developing · rubric 0.25.0 · scored 2026-10-23
+
+| Facet | Score |
+|---|---|
+| Discoverability | 60.7 |
+| Contract quality | 53.7 |
+| Contract governance | 13.6 |
+| Operational transparency | 34.2 |
+| Developer ergonomics | 34.5 |
+| Access clarity | 53.9 |
+
+**Agent readiness 25.4** — agent-aware
+
+| Agent-readiness dimension | Result |
+|---|---|
+| Spec Presence | yes |
+| Agentic Access | derived (partial credit) |
+| Reversibility Documented | — |
+| MCP Server | — |
+| Auth Clarity | negotiable (partial credit) |
+| Idempotency | — |
+| Error Semantics | — |
+| OpenAPI Examples | — |
+| Rate Limit Signal | documented (partial credit) |
+| Event Surface Described | derived (partial credit) |
+| Agent Skills | — |
+| Well Known Catalog | — |
+| Consent Identity | — |
+| Agent Card | — |
+| Dry Run Mode | — |
+| Delegated Identity | — |
+| Protected Resource Metadata | — |
+| Dynamic Client Registration | — |
+| Agentic Commerce | — |
+| Pagination Ratio | na |
+| Operation Distinctiveness | distinct |
+
+**Regulatory alignment 34.3** — Horizontal (data, software, accessibility, platform)
+
+The rubric is published at [github.com/api-evangelist/kin-score](https://github.com/api-evangelist/kin-score). The per-check breakdown behind these numbers — which checks were earned, partial or missed — along with score history and how this provider compares to its peers, is available at [apis.io/providers/helpscout/](https://apis.io/providers/helpscout/).
+
+## How this profile is made
+
+API Evangelist profiles a company's public API surface the way a developer would find it: the website, developer portal and documentation, the specifications it publishes, its public repositories, and its pricing, status and changelog pages. From that it derives the properties above — contracts split per API, workflows, schemas, collections, governance rules, plans and rate limits — and scores them against the published [Kin Score rubric](https://github.com/api-evangelist/kin-score).
+
+The artifacts are published on [APIs.io](https://apis.io), not in this repository. This repository is the public record for Help Scout: the place to say something is wrong, missing or out of date, and to ask for a re-score or a removal.
+
+## Open an issue
+
+- **Something about this listing** — a wrong description, a missing API, a stale artifact or a question about the rating: [open an issue on this repository](https://github.com/api-evangelist/helpscout/issues/new).
+- **A new API, or one that is not in the catalog yet** — [submit it on APIs.io](https://apis.io/add/).
+- **Anything else** — [the APIs.io inbox](https://github.com/api-search/inbox/issues/new) or [info@apievangelist.com](mailto:info@apievangelist.com).
